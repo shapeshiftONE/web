@@ -16,6 +16,7 @@ export const selectAssetByCAIP19 = createSelector(
   selectAssets,
   selectAssetIdParam,
   (byId, assetId) => byId[assetId] || undefined,
+  { memoizeOptions: { maxSize: 100 } }, // memoize per asset id
 )
 
 export const selectAssetNameById = createSelector(selectAssetByCAIP19, asset =>

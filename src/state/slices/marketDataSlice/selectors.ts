@@ -3,12 +3,20 @@ import { CAIP19 } from '@shapeshiftoss/caip'
 import { HistoryTimeframe } from '@shapeshiftoss/types'
 import isEmpty from 'lodash/isEmpty'
 import { ReduxState } from 'state/reducer'
+import { createDeepEqualOutputSelector } from 'state/selector-utils'
 
-export const selectMarketData = (state: ReduxState) => state.marketData.byId
+export const selectMarketData = createSelector(
+  (state: ReduxState) => state.marketData.byId,
+  marketDataById => marketDataById,
+)
 
-export const selectAssetIdParamMarketData = (_state: ReduxState, assetId: CAIP19) => assetId
+export const selectAssetIdParamMarketData = createSelector(
+  (_state: ReduxState, assetId: CAIP19) => assetId,
+  assetId => assetId,
+  { memoizeOptions: { maxSize: 100 } }, // memoize per asset id
+)
 
-export const selectMarketDataById = createSelector(
+export const selectMarketDataById = createDeepEqualOutputSelector(
   selectMarketData,
   selectAssetIdParamMarketData,
   (marketData, assetId) => marketData[assetId],

@@ -3,18 +3,21 @@ import { CAIP10, CAIP19 } from '@shapeshiftoss/caip'
 import { bn, bnOrZero } from '@shapeshiftoss/chain-adapters'
 import { chainAdapters } from '@shapeshiftoss/types'
 import { ValidatorReward } from '@shapeshiftoss/types/dist/chain-adapters/cosmos'
-import BigNumber from 'bignumber.js'
-import get from 'lodash/get'
-import memoize from 'lodash/memoize'
 import reduce from 'lodash/reduce'
 import { fromBaseUnit } from 'lib/math'
 import { ReduxState } from 'state/reducer'
 import { createDeepEqualOutputSelector } from 'state/selector-utils'
+import { selectAssets } from 'state/slices/assetsSlice/selectors'
 import { selectMarketData } from 'state/slices/marketDataSlice/selectors'
 import { accountIdToFeeAssetId } from 'state/slices/portfolioSlice/utils'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
 import { PubKey } from './stakingDataSlice'
+import {
+  getRewardsAmountByValidatorAddress,
+  getTotalCryptoAmount,
+  getUndelegationsAmountByValidatorAddress,
+} from './utils'
 export type ActiveStakingOpportunity = {
   address: PubKey
   moniker: string
@@ -54,14 +57,14 @@ const selectAccountSpecifierParam = (_state: ReduxState, accountSpecifier: CAIP1
 
 const selectValidatorAddress = (
   _state: ReduxState,
-  accountSpecifier: CAIP10,
+  _accountSpecifier: CAIP10,
   validatorAddress: PubKey,
 ) => validatorAddress
 
 const selectAssetIdParam = (
   _state: ReduxState,
-  accountSpecifier: CAIP10,
-  validatorAddress: PubKey,
+  _accountSpecifier: CAIP10,
+  _validatorAddress: PubKey,
   assetId: CAIP19,
 ) => assetId
 
@@ -104,7 +107,7 @@ export const selectTotalStakingDelegationCryptoByFilter = createSelector(
   selectStakingDataByFilter,
   selectAssetIdParamFromFilterOptional,
   selectAccountIdParamFromFilterOptional,
-  (state: ReduxState) => state.assets.byId,
+  selectAssets,
   // We make the assumption that all delegation rewards come from a single denom (asset)
   // In the future there may be chains that support rewards in multiple denoms and this will need to be parsed differently
   (stakingData, assetId, _, assets) => {
@@ -139,7 +142,7 @@ export const selectAllStakingDelegationCrypto = createSelector(selectStakingData
 export const selectTotalStakingDelegationFiat = createSelector(
   selectAllStakingDelegationCrypto,
   selectMarketData,
-  (state: ReduxState) => state.assets.byId,
+  selectAssets,
   (allStaked: { [k: string]: string }, md, assets) => {
     const allStakingData = Object.entries(allStaked)
 
@@ -360,58 +363,6 @@ export const selectNonloadedValidators = createSelector(
     return uniqueValidatorAddresses.filter(x => !allValidators[x])
   },
 )
-
-export const getUndelegationsAmountByValidatorAddress = memoize(
-  (
-    allUndelegationsEntries: Record<PubKey, chainAdapters.cosmos.UndelegationEntry[]>,
-    validatorAddress: PubKey,
-  ) => {
-    return get<
-      Record<PubKey, chainAdapters.cosmos.UndelegationEntry[]>,
-      PubKey,
-      chainAdapters.cosmos.UndelegationEntry[]
-    >(allUndelegationsEntries, validatorAddress, [])
-      .reduce(
-        (acc: BigNumber, undelegationEntry: chainAdapters.cosmos.UndelegationEntry) =>
-          acc.plus(bnOrZero(undelegationEntry.amount)),
-        bnOrZero(0),
-      )
-      .toString()
-  },
-  (
-    allUndelegationsEntries: Record<PubKey, chainAdapters.cosmos.UndelegationEntry[]>,
-    validatorAddress: PubKey,
-  ) =>
-    get<
-      Record<PubKey, chainAdapters.cosmos.UndelegationEntry[]>,
-      PubKey,
-      chainAdapters.cosmos.UndelegationEntry[]
-    >(allUndelegationsEntries, validatorAddress, []),
-)
-
-export const getRewardsAmountByValidatorAddress = memoize(
-  (allRewards: Record<PubKey, chainAdapters.cosmos.Reward[]>, validatorAddress: PubKey) => {
-    return get<
-      Record<PubKey, chainAdapters.cosmos.Reward[]>,
-      PubKey,
-      chainAdapters.cosmos.Reward[]
-    >(allRewards, validatorAddress, [])
-      .reduce((acc: BigNumber, rewardEntry: chainAdapters.cosmos.Reward) => {
-        acc = acc.plus(bnOrZero(rewardEntry.amount))
-        return acc
-      }, bnOrZero(0))
-      .toString()
-  },
-  (allRewards: Record<string, chainAdapters.cosmos.Reward[]>, validatorAddress: PubKey) =>
-    get<Record<PubKey, chainAdapters.cosmos.Reward[]>, PubKey, chainAdapters.cosmos.Reward[]>(
-      allRewards,
-      validatorAddress,
-      [],
-    ),
-)
-
-export const getTotalCryptoAmount = (delegationsAmount: string, undelegationsAmount: string) =>
-  bnOrZero(delegationsAmount).plus(bnOrZero(undelegationsAmount)).toString()
 
 export const selectActiveStakingOpportunityDataByAssetId = createDeepEqualOutputSelector(
   selectAllDelegationsCryptoAmountByAssetId,

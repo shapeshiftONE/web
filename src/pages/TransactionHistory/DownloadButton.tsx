@@ -13,7 +13,7 @@ import {
 } from 'hooks/useTxDetails/useTxDetails'
 import { bnOrZero } from 'lib/bignumber/bignumber'
 import { fromBaseUnit } from 'lib/math'
-import { selectAssetsByMarketCap, selectTxs } from 'state/slices/selectors'
+import { selectAssetsByMarketCap, selectTxs$ } from 'state/slices/selectors'
 import { TxId } from 'state/slices/txHistorySlice/txHistorySlice'
 import { useAppSelector } from 'state/store'
 import { breakpoints } from 'theme/theme'
@@ -36,7 +36,7 @@ type ReportRow = {
 export const DownloadButton = ({ txIds }: { txIds: TxId[] }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isLargerThanLg] = useMediaQuery(`(min-width: ${breakpoints['lg']})`)
-  const allTxs = useAppSelector(selectTxs)
+  const allTxs = useAppSelector(selectTxs$)
   const assets = useAppSelector(selectAssetsByMarketCap)
   const { saveAsCsv } = useJsonToCsv()
   const translate = useTranslate()

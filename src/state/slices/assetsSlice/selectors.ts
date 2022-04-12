@@ -6,18 +6,24 @@ import sortBy from 'lodash/sortBy'
 import { ReduxState } from 'state/reducer'
 import { selectMarketDataIds } from 'state/slices/marketDataSlice/selectors'
 
+export const selectAssets = (state: ReduxState) => state.assets.byId
+selectAssets.selectorName = 'selectAssets'
+
+export const selectAssetIdParam = (_state: ReduxState, assetId: CAIP19) => assetId
+selectAssetIdParam.selectorName = 'selectAssetIdParam'
+
 export const selectAssetByCAIP19 = createSelector(
-  (state: ReduxState) => state.assets.byId,
-  (_state: ReduxState, CAIP19: CAIP19) => CAIP19,
-  (byId, CAIP19) => byId[CAIP19] || undefined,
+  selectAssets,
+  selectAssetIdParam,
+  (byId, assetId) => byId[assetId] || undefined,
 )
 
 export const selectAssetNameById = createSelector(selectAssetByCAIP19, asset =>
   asset ? asset.name : undefined,
 )
 
-export const selectAssets = (state: ReduxState) => state.assets.byId
 export const selectAssetIds = (state: ReduxState) => state.assets.ids
+selectAssetIds.selectorName = 'selectAssetIds'
 
 export const selectAssetsByMarketCap = createSelector(
   selectAssets,
@@ -54,7 +60,7 @@ const chainIdFeeAssetReferenceMap = (chain: ChainTypes, network: NetworkTypes): 
 
 export const selectFeeAssetById = createSelector(
   selectAssets,
-  (_state: ReduxState, assetId: CAIP19) => assetId,
+  selectAssetIdParam,
   (assetsById, assetId): Asset => {
     const { chain, network } = caip19.fromCAIP19(assetId)
     const feeAssetId = caip19.toCAIP19({

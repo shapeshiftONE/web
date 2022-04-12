@@ -16,8 +16,6 @@ import {
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
 import {
-  PortfolioAccountBalances,
-  PortfolioAccountSpecifiers,
   PortfolioAssetBalances,
   PortfolioAssets,
   PortfolioBalancesById,
@@ -36,17 +34,20 @@ const FEE_ASSET_IDS = [
   'cosmos:osmosis-1/slip44:118',
 ]
 
-export const selectPortfolioAssetIds = createDeepEqualOutputSelector(
-  (state: ReduxState): PortfolioAssetBalances['ids'] => state.portfolio.assetBalances.ids,
-  ids => ids,
-)
-export const selectPortfolioAssetBalances = (state: ReduxState): PortfolioAssetBalances['byId'] =>
+export const selectPortfolioAssetIds = (state: ReduxState): PortfolioAssetBalances['ids'] =>
+  state.portfolio.assetBalances.ids
+selectPortfolioAssetIds.selectorName = 'selectPortfolioAssetIds'
+
+export const selectPortfolioAssetBalances = (state: ReduxState) =>
   state.portfolio.assetBalances.byId
-export const selectAccountIds = (state: ReduxState): PortfolioAccountSpecifiers['byId'] =>
-  state.portfolio.accountSpecifiers.byId
-export const selectPortfolioAccountBalances = (
-  state: ReduxState,
-): PortfolioAccountBalances['byId'] => state.portfolio.accountBalances.byId
+selectPortfolioAssetBalances.selectorName = 'selectPortfolioAssetBalances'
+
+export const selectAccountIds = (state: ReduxState) => state.portfolio.accountSpecifiers.byId
+selectAccountIds.selectorName = 'selectAccountIds'
+
+export const selectPortfolioAccountBalances = (state: ReduxState) =>
+  state.portfolio.accountBalances.byId
+selectPortfolioAccountBalances.selectorName = 'selectPortfolioAccountBalances'
 
 export const selectPortfolioFiatBalances = createSelector(
   selectAssets,
@@ -224,7 +225,7 @@ export const selectPortfolioCryptoBalancesByAccountIdAboveThreshold = createDeep
   selectPortfolioAssetBalances,
   selectMarketData,
   selectBalanceThreshold,
-  (_state: ReduxState, accountId?: string) => accountId,
+  selectAccountIdParam,
   (
     assetsById,
     accountBalances,
@@ -424,7 +425,7 @@ export const selectPortfolioAccounts = (state: ReduxState) => state.portfolio.ac
 
 export const selectPortfolioAssetAccounts = createSelector(
   selectPortfolioAccounts,
-  (_state: ReduxState, assetId: CAIP19) => assetId,
+  selectAssetIdParam,
   (portfolioAccounts, assetId): AccountSpecifier[] =>
     Object.keys(portfolioAccounts).filter(accountSpecifier =>
       portfolioAccounts[accountSpecifier].find(accountAssetId => accountAssetId === assetId),
@@ -433,7 +434,7 @@ export const selectPortfolioAssetAccounts = createSelector(
 
 export const selectPortfolioAccountById = createSelector(
   selectPortfolioAccounts,
-  (_state: ReduxState, accountId: AccountSpecifier) => accountId,
+  selectAccountIdParam,
   (portfolioAccounts, accountId) => portfolioAccounts[accountId],
 )
 

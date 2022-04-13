@@ -68,11 +68,16 @@ const selectAssetIdParam = (
 
 export const selectStakingData = (state: ReduxState) => state.stakingData
 
+// TODO: here to not circle deps, remove me
+const selectPortfolioAccounts = (state: ReduxState) => state.portfolio.accounts.byId
+
 export const selectStakingDataByAccountSpecifier = createSelector(
-  selectStakingData,
+  selectPortfolioAccounts,
   selectAccountSpecifierParam,
-  (stakingData, accountSpecifier) => {
-    return stakingData.byAccountSpecifier[accountSpecifier] || null
+  (portfolioAccounts, accountSpecifier) => {
+    console.log('for accountSpecifier ', accountSpecifier)
+    console.log('returning... ', portfolioAccounts?.[accountSpecifier]?.stakingData || null)
+    return portfolioAccounts?.[accountSpecifier]?.stakingData || null
   },
 )
 
@@ -120,7 +125,8 @@ export const selectTotalStakingDelegationCryptoByFilter = createSelector(
 )
 
 export const selectAllStakingDelegationCrypto = createSelector(selectStakingData, stakingData => {
-  const allStakingData = Object.entries(stakingData.byAccountSpecifier)
+  // TODO: unbreak it
+  const allStakingData = Object.entries([])
   return reduce(
     allStakingData,
     (acc, val) => {

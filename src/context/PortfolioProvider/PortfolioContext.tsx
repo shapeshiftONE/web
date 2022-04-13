@@ -208,25 +208,6 @@ export const PortfolioProvider = ({ children }: { children: React.ReactNode }) =
   )
 
   /**
-   * refetch an account given a newly confirmed txid
-   */
-  const refetchStakingDataByTxId = useCallback(
-    (txId: TxId) => {
-      // the accountSpecifier the tx came from
-      const { txAccountSpecifier } = deserializeUniqueTxId(txId)
-      if (!txAccountSpecifier.length) return
-
-      dispatch(
-        stakingDataApi.endpoints.getStakingData.initiate(
-          { accountSpecifier: txAccountSpecifier },
-          { forceRefetch: true },
-        ),
-      )
-    },
-    [dispatch],
-  )
-
-  /**
    * monitor for new pending txs, add them to a set, so we can monitor when they're confirmed
    */
   useEffect(() => {

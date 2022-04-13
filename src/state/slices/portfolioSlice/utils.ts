@@ -292,10 +292,10 @@ export const accountToPortfolio: AccountToPortfolio = args => {
 
         portfolio.accounts.byId[accountSpecifier] = {
           assetIds: [],
-          stakingDataByAccountSpecifier: {},
+          stakingData: {},
         }
         portfolio.accounts.byId[accountSpecifier].assetIds.push(caip19)
-        portfolio.accounts.byId[accountSpecifier].stakingDataByAccountSpecifier = stakingData
+        portfolio.accounts.byId[accountSpecifier].stakingData = stakingData
         portfolio.accounts.ids.push(accountSpecifier)
 
         portfolio.assetBalances.byId[caip19] = sumBalance(

@@ -120,12 +120,12 @@ export const accountIdToUtxoParams = (
 }
 
 export const findAccountsByAssetId = (
-  portfolioAccounts: { [k: string]: string[] },
+  portfolioAccounts: { [k: string]: { assetIds: string[] } },
   assetId: CAIP19,
 ): AccountSpecifier[] => {
   const result = Object.entries(portfolioAccounts).reduce<AccountSpecifier[]>(
-    (acc, [accountId, accountAssets]) => {
-      if (accountAssets.includes(assetId)) acc.push(accountId)
+    (acc, [accountId, account]) => {
+      if (account.assetIds.includes(assetId)) acc.push(accountId)
       return acc
     },
     [],
@@ -174,8 +174,8 @@ export const accountToPortfolio: AccountToPortfolio = args => {
         portfolio.accountBalances.ids.push(accountSpecifier)
         portfolio.accountSpecifiers.ids.push(accountSpecifier)
 
-        portfolio.accounts.byId[accountSpecifier] = []
-        portfolio.accounts.byId[accountSpecifier].push(caip19)
+        portfolio.accounts.byId[accountSpecifier] = { assetIds: [] }
+        portfolio.accounts.byId[accountSpecifier].assetIds.push(caip19)
         portfolio.accounts.ids.push(accountSpecifier)
 
         portfolio.assetBalances.byId[caip19] = sumBalance(
@@ -197,7 +197,7 @@ export const accountToPortfolio: AccountToPortfolio = args => {
             return
           }
 
-          portfolio.accounts.byId[CAIP10].push(token.caip19)
+          portfolio.accounts.byId[CAIP10].assetIds.push(token.caip19)
           // add assetId without dupes
           portfolio.assetBalances.ids = Array.from(
             new Set([...portfolio.assetBalances.ids, token.caip19]),
@@ -234,14 +234,14 @@ export const accountToPortfolio: AccountToPortfolio = args => {
         portfolio.accountBalances.byId[accountSpecifier][caip19] = balance
 
         // initialize
-        if (!portfolio.accounts.byId[accountSpecifier]?.length) {
-          portfolio.accounts.byId[accountSpecifier] = []
+        if (!portfolio.accounts.byId[accountSpecifier]?.assetIds.length) {
+          portfolio.accounts.byId[accountSpecifier] = { assetIds: [] }
         }
 
         portfolio.accounts.ids = Array.from(new Set([...portfolio.accounts.ids, accountSpecifier]))
 
-        portfolio.accounts.byId[accountSpecifier] = Array.from(
-          new Set([...portfolio.accounts.byId[accountSpecifier], caip19]),
+        portfolio.accounts.byId[accountSpecifier].assetIds = Array.from(
+          new Set([...portfolio.accounts.byId[accountSpecifier].assetIds, caip19]),
         )
 
         portfolio.assetBalances.ids = Array.from(new Set([...portfolio.assetBalances.ids, caip19]))
@@ -271,8 +271,8 @@ export const accountToPortfolio: AccountToPortfolio = args => {
         portfolio.accountBalances.ids.push(accountSpecifier)
         portfolio.accountSpecifiers.ids.push(accountSpecifier)
 
-        portfolio.accounts.byId[accountSpecifier] = []
-        portfolio.accounts.byId[accountSpecifier].push(caip19)
+        portfolio.accounts.byId[accountSpecifier] = { assetIds: [] }
+        portfolio.accounts.byId[accountSpecifier].assetIds.push(caip19)
         portfolio.accounts.ids.push(accountSpecifier)
 
         portfolio.assetBalances.byId[caip19] = sumBalance(

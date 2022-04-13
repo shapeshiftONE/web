@@ -427,14 +427,16 @@ export const selectPortfolioAssetAccounts = createSelector(
   (_state: ReduxState, assetId: CAIP19) => assetId,
   (portfolioAccounts, assetId): AccountSpecifier[] =>
     Object.keys(portfolioAccounts).filter(accountSpecifier =>
-      portfolioAccounts[accountSpecifier].find(accountAssetId => accountAssetId === assetId),
+      portfolioAccounts[accountSpecifier].assetIds.find(
+        accountAssetId => accountAssetId === assetId,
+      ),
     ),
 )
 
 export const selectPortfolioAccountById = createSelector(
   selectPortfolioAccounts,
   (_state: ReduxState, accountId: AccountSpecifier) => accountId,
-  (portfolioAccounts, accountId) => portfolioAccounts[accountId],
+  (portfolioAccounts, accountId) => portfolioAccounts[accountId].assetIds,
 )
 
 export const selectPortfolioAssetIdsByAccountId = createSelector(

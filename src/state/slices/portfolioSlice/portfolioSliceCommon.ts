@@ -35,8 +35,12 @@ export type AccountSpecifier = string
 
 export type PortfolioAccounts = {
   byId: {
-    // asset ids belonging to an account
-    [k: AccountSpecifier]: CAIP19[]
+    [k: AccountSpecifier]: {
+      // asset ids belonging to an account
+      assetIds: CAIP19[]
+      // mapping(accountSpecifier -> StakingDataByAccountSpecifier)
+      // stakingDataByAccountSpecifier: StakingDataByAccountSpecifier
+    }
   }
   // a list of accounts in this portfolio
   ids: AccountSpecifier[]

@@ -14,6 +14,7 @@ import toLower from 'lodash/toLower'
 import { bn, bnOrZero } from 'lib/bignumber/bignumber'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
+import { StakingDataByAccountSpecifier } from '../stakingDataSlice/stakingDataSlice'
 import { initialState, Portfolio } from './portfolioSliceCommon'
 
 export type UtxoParamsAndAccountType = {
@@ -120,7 +121,12 @@ export const accountIdToUtxoParams = (
 }
 
 export const findAccountsByAssetId = (
-  portfolioAccounts: { [k: string]: { assetIds: string[] } },
+  portfolioAccounts: {
+    [k: string]: {
+      assetIds: string[]
+      stakingDataByAccountSpecifier?: StakingDataByAccountSpecifier
+    }
+  },
   assetId: CAIP19,
 ): AccountSpecifier[] => {
   const result = Object.entries(portfolioAccounts).reduce<AccountSpecifier[]>(
@@ -235,7 +241,9 @@ export const accountToPortfolio: AccountToPortfolio = args => {
 
         // initialize
         if (!portfolio.accounts.byId[accountSpecifier]?.assetIds.length) {
-          portfolio.accounts.byId[accountSpecifier] = { assetIds: [] }
+          portfolio.accounts.byId[accountSpecifier] = {
+            assetIds: [],
+          }
         }
 
         portfolio.accounts.ids = Array.from(new Set([...portfolio.accounts.ids, accountSpecifier]))
@@ -271,8 +279,23 @@ export const accountToPortfolio: AccountToPortfolio = args => {
         portfolio.accountBalances.ids.push(accountSpecifier)
         portfolio.accountSpecifiers.ids.push(accountSpecifier)
 
-        portfolio.accounts.byId[accountSpecifier] = { assetIds: [] }
+        const {
+          chainSpecific: { delegations, redelegations, undelegations, rewards },
+        } = account as any // TODO: tsc pls
+
+        const stakingData = {
+          delegations,
+          redelegations,
+          undelegations,
+          rewards,
+        }
+
+        portfolio.accounts.byId[accountSpecifier] = {
+          assetIds: [],
+          stakingDataByAccountSpecifier: {},
+        }
         portfolio.accounts.byId[accountSpecifier].assetIds.push(caip19)
+        portfolio.accounts.byId[accountSpecifier].stakingDataByAccountSpecifier = stakingData
         portfolio.accounts.ids.push(accountSpecifier)
 
         portfolio.assetBalances.byId[caip19] = sumBalance(

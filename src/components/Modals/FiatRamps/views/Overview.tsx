@@ -61,6 +61,7 @@ export const Overview = ({
   const { fiatRamps } = useModal()
 
   const [shownOnDisplay, setShownOnDisplay] = useState<Boolean | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
   const {
     state: { wallet },
   } = useWallet()
@@ -191,15 +192,16 @@ export const Overview = ({
           width='full'
           size='lg'
           colorScheme='blue'
+          isLoading={loading}
           disabled={!selectedAsset}
           mt='25px'
-          onClick={() =>
-            supportedFiatRamps[fiatRampProvider].onSubmit(
-              fiatRampAction,
-              selectedAsset?.symbol || '',
-              addressFull || '',
-            )
-          }
+          onClick={() => {
+            setLoading(true)
+            supportedFiatRamps[fiatRampProvider]
+              .onSubmit(fiatRampAction, selectedAsset?.symbol || '', addressFull || '')
+              .then(() => setLoading(false))
+              .catch(() => setLoading(false))
+          }}
         >
           <Text translation='common.continue' />
         </Button>

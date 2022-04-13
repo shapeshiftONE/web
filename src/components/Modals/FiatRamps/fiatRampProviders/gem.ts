@@ -6,7 +6,12 @@ import memoize from 'lodash/memoize'
 import uniqBy from 'lodash/uniqBy'
 import queryString from 'querystring'
 
+<<<<<<< HEAD
 import { FiatRampAction, FiatRampCurrency } from '../FiatRampsCommon'
+=======
+import { FiatRampAction, FiatRampCurrency, MixedPortfolioAssetBalances } from '../FiatRampsCommon'
+import { isSupportedBitcoinAsset } from '../utils'
+>>>>>>> 7223cc02 (feat: banxa fiat ramp integration)
 
 enum TransactionDirection {
   BankToBlockchain = 'bank_blockchain',

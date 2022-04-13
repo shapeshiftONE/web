@@ -1,7 +1,9 @@
 import concat from 'lodash/concat'
+import banxalogo from 'assets/banxa.png'
 import gemlogo from 'assets/gem-mark.png'
 import onjunologo from 'assets/onjuno.png'
 
+import { createBanxaOrder, getCoins } from './fiatRampProviders/banxa'
 import {
   fetchCoinifySupportedCurrencies,
   fetchWyreSupportedCurrencies,
@@ -23,6 +25,7 @@ export interface SupportedFiatRampConfig {
 export enum FiatRamps {
   Gem = 'Gem',
   OnJuno = 'OnJuno',
+  Banxa = 'Banxa',
 }
 
 export const supportedFiatRamps: Record<FiatRamps, SupportedFiatRampConfig> = {
@@ -38,17 +41,31 @@ export const supportedFiatRamps: Record<FiatRamps, SupportedFiatRampConfig> = {
       const parsedSellList = parseGemSellAssets(currencyList)
       return [parsedBuyList, parsedSellList]
     },
-    onSubmit: (action, asset, address) => {
+    onSubmit: async (action, asset, address) => {
       const gemPartnerUrl = makeGemPartnerUrl(action, asset, address)
       window.open(gemPartnerUrl, '_blank')?.focus()
     },
     readyToUse: true,
+  },
+  [FiatRamps.Banxa]: {
+    label: 'fiatRamps.banxa',
+    info: 'fiatRamps.banxaMessage',
+    logo: banxalogo,
+    readyToUse: true,
+    getBuyAndSellList: async () => {
+      const coins = await getCoins()
+      return [coins, coins]
+    },
+    onSubmit: async (action: FiatRampAction, asset: string, address: string) => {
+      const banxaCheckoutUrl = await createBanxaOrder(action, asset, address)
+      window.open(banxaCheckoutUrl, '_blank')?.focus()
+    },
   },
   [FiatRamps.OnJuno]: {
     label: 'fiatRamps.onJuno',
     logo: onjunologo,
     readyToUse: false,
     getBuyAndSellList: async () => [[], []],
-    onSubmit: () => {},
+    onSubmit: async () => {},
   },
 }

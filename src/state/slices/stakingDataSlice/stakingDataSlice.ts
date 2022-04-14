@@ -9,14 +9,14 @@ export type PubKey = string
 
 type SingleValidatorDataArgs = { chainId: CAIP2; validatorAddress: PubKey }
 
-export type StakingDataStatus = 'idle' | 'loading' | 'loaded'
+export type Status = 'idle' | 'loading' | 'loaded'
 
 export type Validators = {
   validators: chainAdapters.cosmos.Validator[]
 }
 
-export type StakingData = {
-  validatorStatus: StakingDataStatus
+export type ValidatorData = {
+  validatorStatus: Status
   byValidator: ValidatorDataByPubKey
   validatorIds: string[]
 }
@@ -25,7 +25,7 @@ export type ValidatorDataByPubKey = {
   [k: PubKey]: chainAdapters.cosmos.Validator
 }
 
-const initialState: StakingData = {
+const initialState: ValidatorData = {
   byValidator: {},
   validatorIds: [],
   validatorStatus: 'idle',
@@ -41,14 +41,14 @@ const updateOrInsertValidatorData = (
   })
 }
 
-type StakingDataStatusPayload = { payload: StakingDataStatus }
+type StatusPayload = { payload: Status }
 
-export const stakingData = createSlice({
-  name: 'stakingData',
+export const validatorData = createSlice({
+  name: 'validatorData',
   initialState,
   reducers: {
     clear: () => initialState,
-    setValidatorStatus: (state, { payload }: StakingDataStatusPayload) => {
+    setValidatorStatus: (state, { payload }: StatusPayload) => {
       state.validatorStatus = payload
     },
     upsertValidatorData: (
@@ -61,8 +61,8 @@ export const stakingData = createSlice({
   },
 })
 
-export const stakingDataApi = createApi({
-  reducerPath: 'stakingDataApi',
+export const validatorDataApi = createApi({
+  reducerPath: 'validatorDataApi',
   // not actually used, only used to satisfy createApi, we use a custom queryFn
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
   // refetch if network connection is dropped, useful for mobile
@@ -74,11 +74,11 @@ export const stakingDataApi = createApi({
         const adapter = (await chainAdapters.byChainId(
           chainId,
         )) as CosmosSdkBaseAdapter<ChainTypes.Cosmos>
-        dispatch(stakingData.actions.setValidatorStatus('loading'))
+        dispatch(validatorData.actions.setValidatorStatus('loading'))
         try {
           const data = await adapter.getValidator(validatorAddress)
           dispatch(
-            stakingData.actions.upsertValidatorData({
+            validatorData.actions.upsertValidatorData({
               validators: [data],
             }),
           )
@@ -94,7 +94,7 @@ export const stakingDataApi = createApi({
             },
           }
         } finally {
-          dispatch(stakingData.actions.setValidatorStatus('loaded'))
+          dispatch(validatorData.actions.setValidatorStatus('loaded'))
         }
       },
     }),

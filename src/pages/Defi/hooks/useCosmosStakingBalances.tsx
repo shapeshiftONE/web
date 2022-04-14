@@ -10,8 +10,6 @@ import {
 import {
   ActiveStakingOpportunity,
   selectSingleValidator,
-  selectStakingDataIsLoaded,
-  selectValidatorIsLoaded,
 } from 'state/slices/stakingDataSlice/selectors'
 import { stakingDataApi } from 'state/slices/stakingDataSlice/stakingDataSlice'
 import { useAppDispatch, useAppSelector } from 'state/store'

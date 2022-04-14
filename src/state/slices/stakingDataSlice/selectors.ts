@@ -13,6 +13,34 @@ import { accountIdToFeeAssetId } from 'state/slices/portfolioSlice/utils'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
 import { PubKey } from './stakingDataSlice'
+
+// START VALIDATOR SELECTORS
+const selectValidatorAddress = (
+  _state: ReduxState,
+  _accountSpecifier: CAIP10,
+  validatorAddress: PubKey,
+) => validatorAddress
+
+export const selectValidatorData = (state: ReduxState) => state.validatorData
+
+export const selectSingleValidator = createSelector(
+  selectValidatorData,
+  selectValidatorAddress,
+  (stakingData, validatorAddress) => {
+    return stakingData.byValidator[validatorAddress] || null
+  },
+)
+// END VALIDATOR SELECTORS
+
+// accountId is optional, but we should always pass an assetId when using these params
+type OptionalParamFilter = {
+  assetId: CAIP19
+  accountId?: AccountSpecifier
+}
+
+const selectAccountSpecifierParam = (_state: ReduxState, accountSpecifier: CAIP10) =>
+  accountSpecifier
+
 export type ActiveStakingOpportunity = {
   address: PubKey
   moniker: string
@@ -29,12 +57,6 @@ export type AmountByValidatorAddressType = {
   [k: PubKey]: string
 }
 
-// accountId is optional, but we should always pass an assetId when using these params
-type OptionalParamFilter = {
-  assetId: CAIP19
-  accountId?: AccountSpecifier
-}
-
 const selectAssetIdParamFromFilterOptional = (
   _state: ReduxState,
   paramFilter: OptionalParamFilter,
@@ -43,28 +65,12 @@ const selectAccountIdParamFromFilterOptional = (
   _state: ReduxState,
   paramFilter: OptionalParamFilter,
 ) => paramFilter.accountId
-
-export const selectStakingDataIsLoaded = (state: ReduxState) =>
-  state.stakingData.status === 'loaded'
-export const selectValidatorIsLoaded = (state: ReduxState) =>
-  state.stakingData.validatorStatus === 'loaded'
-const selectAccountSpecifierParam = (_state: ReduxState, accountSpecifier: CAIP10) =>
-  accountSpecifier
-
-const selectValidatorAddress = (
-  _state: ReduxState,
-  accountSpecifier: CAIP10,
-  validatorAddress: PubKey,
-) => validatorAddress
-
 const selectAssetIdParam = (
   _state: ReduxState,
-  accountSpecifier: CAIP10,
-  validatorAddress: PubKey,
+  _accountSpecifier: CAIP10,
+  _validatorAddress: PubKey,
   assetId: CAIP19,
 ) => assetId
-
-export const selectStakingData = (state: ReduxState) => state.stakingData
 
 // TODO: here to not circle deps, remove me
 const selectPortfolioAccounts = (state: ReduxState) => state.portfolio.accounts.byId
@@ -78,10 +84,11 @@ export const selectStakingDataByAccountSpecifier = createSelector(
 )
 
 export const selectStakingDataByFilter = createSelector(
-  selectStakingData,
+  state => state, // TODO: unbreak me
   selectAssetIdParamFromFilterOptional,
   selectAccountIdParamFromFilterOptional,
   (stakingData, _, accountId) => {
+    console.log({ stakingData })
     if (!accountId) return null
     return stakingData.byAccountSpecifier[accountId] || null
   },
@@ -121,8 +128,7 @@ export const selectTotalStakingDelegationCryptoByFilter = createSelector(
 )
 
 export const selectAllStakingDelegationCrypto = createSelector(selectStakingData, stakingData => {
-  // TODO: unbreak it
-  const allStakingData = Object.entries([])
+  const allStakingData = Object.entries(stakingData.byAccountSpecifier)
   return reduce(
     allStakingData,
     (acc, val) => {
@@ -138,7 +144,6 @@ export const selectAllStakingDelegationCrypto = createSelector(selectStakingData
     {},
   )
 })
-
 export const selectTotalStakingDelegationFiat = createSelector(
   selectAllStakingDelegationCrypto,
   selectMarketData,
@@ -281,14 +286,6 @@ export const selectRewardsAmountByAssetId = createSelector(
   },
 )
 
-export const selectSingleValidator = createSelector(
-  selectStakingData,
-  selectValidatorAddress,
-  (stakingData, validatorAddress) => {
-    return stakingData.byValidator[validatorAddress] || null
-  },
-)
-
 // TODO: This one moves out to the porfolio slice, bye bye stakingData
 export const selectRewardsByValidator = createDeepEqualOutputSelector(
   selectPortfolioAccounts,
@@ -297,8 +294,6 @@ export const selectRewardsByValidator = createDeepEqualOutputSelector(
   (allPortfolioAccounts, validatorAddress, accountSpecifier): BigNumber => {
     // TODO: account specifier here
     const cosmosAccount = allPortfolioAccounts?.[accountSpecifier]
-
-    console.log({ cosmosAccount, validatorAddress, accountSpecifier })
 
     if (!cosmosAccount?.stakingData?.rewards) return '0'
 

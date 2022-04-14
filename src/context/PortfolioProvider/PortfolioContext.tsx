@@ -38,7 +38,7 @@ import {
   selectTxIds,
   selectTxs,
 } from 'state/slices/selectors'
-import { stakingDataApi } from 'state/slices/stakingDataSlice/stakingDataSlice'
+import { validatorDataApi } from 'state/slices/stakingDataSlice/stakingDataSlice'
 import { TxId } from 'state/slices/txHistorySlice/txHistorySlice'
 import { deserializeUniqueTxId } from 'state/slices/txHistorySlice/utils'
 import { useAppSelector } from 'state/store'
@@ -236,7 +236,7 @@ export const PortfolioProvider = ({ children }: { children: React.ReactNode }) =
         validators.forEach(validatorAddress => {
           // and then use .select() to determine loading state on the presence or not of that validator in the RTK slice
           dispatch(
-            stakingDataApi.endpoints.getValidatorData.initiate({
+            validatorDataApi.endpoints.getValidatorData.initiate({
               // TODO: Make me programmatic
               chainId: 'cosmos:cosmoshub-4',
               validatorAddress,

@@ -175,6 +175,7 @@ export const selectAllDelegationsCryptoAmountByAssetId = createSelector(
       },
       {},
     )
+    console.log('coucou', { delegations })
     return delegations
   },
 )
@@ -296,6 +297,8 @@ export const selectRewardsByValidator = createDeepEqualOutputSelector(
   (allPortfolioAccounts, validatorAddress, accountSpecifier): BigNumber => {
     // TODO: account specifier here
     const cosmosAccount = allPortfolioAccounts?.[accountSpecifier]
+
+    console.log({ cosmosAccount, validatorAddress, accountSpecifier })
 
     if (!cosmosAccount?.stakingData?.rewards) return '0'
 

@@ -97,7 +97,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
   const handleStakedClick = (values: Row<ActiveStakingOpportunity>) => {
     cosmosStaking.open({
       assetId,
-      validatorAddress: values.original.address,
+      validatorAddress: values.original.validatorId,
     })
   }
 

@@ -6,19 +6,17 @@ import { AssetClaimCard } from 'plugins/cosmos/components/AssetClaimCard/AssetCl
 import { ClaimButton } from 'plugins/cosmos/components/ClaimButton/ClaimButton'
 import { StakedRow } from 'plugins/cosmos/components/StakedRow/StakedRow'
 import { UnbondingRow } from 'plugins/cosmos/components/UnbondingRow/UnbondingRow'
-import { useEffect } from 'react'
 import { Text } from 'components/Text'
 import { bnOrZero } from 'lib/bignumber/bignumber'
 import { selectAssetByCAIP19, selectMarketDataById } from 'state/slices/selectors'
 import {
   selectAllUnbondingsEntriesByAssetIdAndValidator,
   selectRewardsAmountByAssetId,
+  selectRewardsByValidator,
   selectSingleValidator,
-  selectStakingDataIsLoaded,
   selectTotalBondingsBalanceByAssetId,
 } from 'state/slices/stakingDataSlice/selectors'
-import { stakingDataApi } from 'state/slices/stakingDataSlice/stakingDataSlice'
-import { useAppDispatch, useAppSelector } from 'state/store'
+import { useAppSelector } from 'state/store'
 
 type StakedProps = {
   assetId: CAIP19
@@ -31,14 +29,11 @@ export const Overview: React.FC<StakedProps> = ({
   validatorAddress,
   accountSpecifier,
 }) => {
-  const isLoaded = useAppSelector(selectStakingDataIsLoaded)
+  const isLoaded = true // TODO: remove me
   const asset = useAppSelector(state => selectAssetByCAIP19(state, assetId))
   const marketData = useAppSelector(state => selectMarketDataById(state, assetId))
 
-  const validatorInfo = useAppSelector(state =>
-    selectSingleValidator(state, accountSpecifier, validatorAddress),
-  )
-
+  const validatorInfo = useAppSelector(state => selectSingleValidator(state, '', validatorAddress))
   const totalBondings = useAppSelector(state =>
     selectTotalBondingsBalanceByAssetId(state, accountSpecifier, validatorAddress, asset.caip19),
   )
@@ -53,6 +48,10 @@ export const Overview: React.FC<StakedProps> = ({
 
   const rewardsAmount = useAppSelector(state =>
     selectRewardsAmountByAssetId(state, accountSpecifier, validatorAddress, asset.caip19),
+  )
+
+  const rewards = useAppSelector(state =>
+    selectRewardsByValidator(state, accountSpecifier, validatorAddress),
   )
 
   // If it's loading, it will display the skeleton,

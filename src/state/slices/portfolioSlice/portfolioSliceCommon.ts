@@ -46,7 +46,8 @@ export type PortfolioAccounts = {
       // asset ids belonging to an account
       assetIds: CAIP19[]
       // the associated staking data for an account
-      stakingData?: Staking
+      stakingData?: Staking | {}
+      validatorIds: string[]
     }
   }
   // a list of accounts in this portfolio

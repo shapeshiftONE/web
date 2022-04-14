@@ -9,8 +9,6 @@ import {
 } from 'state/slices/selectors'
 import {
   ActiveStakingOpportunity,
-  selectActiveStakingOpportunityDataByAssetId,
-  selectNonloadedValidators,
   selectSingleValidator,
   selectStakingDataIsLoaded,
   selectValidatorIsLoaded,
@@ -59,18 +57,10 @@ export function useCosmosStakingBalances({
   const accountSpecifiers = useAppSelector(state => selectAccountSpecifier(state, asset?.caip2))
   const accountSpecifier = accountSpecifiers?.[0]
 
-  const activeStakingOpportunities = useAppSelector(state =>
-    selectActiveStakingOpportunityDataByAssetId(
-      state,
-      accountSpecifier,
-      SHAPESHIFT_VALIDATOR_ADDRESS,
-      asset.caip19,
-    ),
-  )
-
   const shapeshiftValidator = useAppSelector(state =>
     selectSingleValidator(state, accountSpecifier, SHAPESHIFT_VALIDATOR_ADDRESS),
   )
+  console.log({ shapeshiftValidator })
   const stakingOpportunities = useMemo(() => {
     return [
       {
@@ -79,29 +69,28 @@ export function useCosmosStakingBalances({
     ]
   }, [shapeshiftValidator])
 
-  const nonLoadedValidators = useAppSelector(state =>
-    selectNonloadedValidators(state, accountSpecifier),
-  )
-
   const chainId = asset.caip2
 
   const mergedActiveStakingOpportunities = useMemo(() => {
-    return Object.values(activeStakingOpportunities).map(opportunity => {
-      const fiatAmount = bnOrZero(opportunity.cryptoAmount)
-        .div(`1e+${asset.precision}`)
-        .times(bnOrZero(marketData.price))
-        .toFixed(2)
-
-      const tvl = bnOrZero(opportunity.tokens)
-        .div(`1e+${asset.precision}`)
-        .times(bnOrZero(marketData?.price))
-        .toString()
+    return Object.values(stakingOpportunities).map(opportunity => {
+      const fiatAmount = bnOrZero(0)
+      // const fiatAmount = bnOrZero(opportunity.cryptoAmount)
+      // .div(`1e+${asset.precision}`)
+      // .times(bnOrZero(marketData.price))
+      // .toFixed(2)
+      //
+      const tvl = bnOrZero(0)
+      // const tvl = bnOrZero(opportunity.tokens)
+      // .div(`1e+${asset.precision}`)
+      // .times(bnOrZero(marketData?.price))
+      // .toString()
       const data = {
         ...opportunity,
-        cryptoAmount: bnOrZero(opportunity.cryptoAmount)
-          .div(`1e+${asset?.precision}`)
-          .decimalPlaces(asset.precision)
-          .toString(),
+        cryptoAmount: bnOrZero(0),
+        // cryptoAmount: bnOrZero(opportunity.cryptoAmount)
+        // .div(`1e+${asset?.precision}`)
+        // .decimalPlaces(asset.precision)
+        // .toString(),
         tvl,
         fiatAmount,
         chain: asset.chain,
@@ -110,7 +99,7 @@ export function useCosmosStakingBalances({
       }
       return data
     })
-  }, [assetId, asset, marketData, activeStakingOpportunities])
+  }, [assetId, asset, marketData])
 
   const mergedStakingOpportunities = useMemo(() => {
     return Object.values(stakingOpportunities).map(opportunity => {
@@ -142,45 +131,12 @@ export function useCosmosStakingBalances({
 
   useEffect(() => {
     ;(async () => {
-      if (!accountSpecifier?.length || isStakingDataLoaded) return
-
-      dispatch(
-        stakingDataApi.endpoints.getStakingData.initiate(
-          { accountSpecifier },
-          { forceRefetch: true },
-        ),
-      )
-    })()
-  }, [accountSpecifier, isStakingDataLoaded, dispatch])
-
-  useEffect(() => {
-    ;(async () => {
-      if (isValidatorDataLoaded) return
-
-      dispatch(
-        stakingDataApi.endpoints.getAllValidatorsData.initiate({ chainId }, { forceRefetch: true }),
-      )
+      if (!isValidatorDataLoaded) return
     })()
   }, [isValidatorDataLoaded, dispatch, chainId])
 
-  useEffect(() => {
-    ;(async () => {
-      if (!isValidatorDataLoaded || !nonLoadedValidators?.length) return
-
-      nonLoadedValidators.forEach(validatorAddress => {
-        dispatch(
-          stakingDataApi.endpoints.getValidatorData.initiate(
-            { chainId, validatorAddress },
-            { forceRefetch: true },
-          ),
-        )
-      })
-    })()
-  }, [isValidatorDataLoaded, nonLoadedValidators, dispatch, chainId])
-
   return {
-    activeStakingOpportunities: isLoaded ? mergedActiveStakingOpportunities : [],
-    stakingOpportunities: isLoaded ? mergedStakingOpportunities : [],
+    stakingOpportunities: mergedStakingOpportunities,
     isLoaded,
     totalBalance: totalBalance.toString(),
   }

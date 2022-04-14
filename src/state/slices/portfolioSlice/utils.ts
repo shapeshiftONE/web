@@ -11,6 +11,7 @@ import {
 import cloneDeep from 'lodash/cloneDeep'
 import last from 'lodash/last'
 import toLower from 'lodash/toLower'
+import uniq from 'lodash/uniq'
 import { bn, bnOrZero } from 'lib/bignumber/bignumber'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
@@ -293,9 +294,21 @@ export const accountToPortfolio: AccountToPortfolio = args => {
         portfolio.accounts.byId[accountSpecifier] = {
           assetIds: [],
           stakingData: {},
+          validatorIds: [],
         }
+
         portfolio.accounts.byId[accountSpecifier].assetIds.push(caip19)
         portfolio.accounts.byId[accountSpecifier].stakingData = stakingData
+        // TODO: refactor this before review
+        const uniqueValidatorAddresses = uniq(
+          [
+            stakingData.delegations.map(delegation => delegation.validator.address),
+            stakingData.undelegations.map(undelegation => undelegation.validator.address),
+            stakingData.rewards.map(reward => reward.validator.address),
+          ].flat(),
+        )
+
+        portfolio.accounts.byId[accountSpecifier].validatorIds = uniqueValidatorAddresses
         portfolio.accounts.ids.push(accountSpecifier)
 
         portfolio.assetBalances.byId[caip19] = sumBalance(

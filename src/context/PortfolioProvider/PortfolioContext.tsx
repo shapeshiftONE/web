@@ -32,6 +32,7 @@ import {
   selectAccountSpecifiers,
   selectAssetIds,
   selectAssets,
+  selectPortfolioAccounts,
   selectPortfolioAssetIds,
   selectTxHistoryStatus,
   selectTxIds,
@@ -40,6 +41,7 @@ import {
 import { stakingDataApi } from 'state/slices/stakingDataSlice/stakingDataSlice'
 import { TxId } from 'state/slices/txHistorySlice/txHistorySlice'
 import { deserializeUniqueTxId } from 'state/slices/txHistorySlice/utils'
+import { useAppSelector } from 'state/store'
 
 /**
  * note - be super careful playing with this component, as it's responsible for asset,
@@ -207,6 +209,8 @@ export const PortfolioProvider = ({ children }: { children: React.ReactNode }) =
     [accountSpecifiersList, dispatch],
   )
 
+  const portfolioAccounts = useAppSelector(state => selectPortfolioAccounts(state))
+
   /**
    * monitor for new pending txs, add them to a set, so we can monitor when they're confirmed
    */
@@ -223,9 +227,20 @@ export const PortfolioProvider = ({ children }: { children: React.ReactNode }) =
     if (!tx) return
 
     if (tx.caip2 === cosmosChainId) {
-      // @TODO: Remove this once stakingData slice is refactored into account data
-      refetchStakingDataByTxId(txId)
-
+      // TODO: this probably shouldn't belong here, otherwise it will only work after first websocket Tx
+      const validators =
+        portfolioAccounts['cosmos:cosmoshub-4:cosmos1a8l3srqyk5krvzhkt7cyzy52yxcght6322w2qy']
+          ?.validatorIds
+      validators?.length &&
+        validators.forEach(validatorAddress => {
+          // and then use .select() to determine loading state on the presence or not of that validator in the RTK slice
+          dispatch(
+            stakingDataApi.endpoints.getValidatorData.initiate({
+              chainId: 'cosmos:cosmoshub-4',
+              validatorAddress,
+            }),
+          )
+        })
       // cosmos txs only come in when they're confirmed, so refetch that account immediately
       return refetchAccountByTxId(txId)
     } else {

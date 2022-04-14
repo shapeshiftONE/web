@@ -352,22 +352,6 @@ export const selectSingleValidator = createSelector(
   },
 )
 
-export const selectNonloadedValidators = createSelector(
-  selectStakingDataByAccountSpecifier,
-  selectAllValidators,
-  (stakingData, allValidators): PubKey[] => {
-    if (!stakingData) return []
-    const initialValidatorsAddresses = stakingData.delegations?.map(x => x.validator.address) ?? []
-    initialValidatorsAddresses.push(
-      ...(stakingData.undelegations?.map(x => x.validator.address) ?? []),
-    )
-    initialValidatorsAddresses.push(...(stakingData.rewards?.map(x => x.validator.address) ?? []))
-
-    const uniqueValidatorAddresses = [...new Set(initialValidatorsAddresses)]
-    return uniqueValidatorAddresses.filter(x => !allValidators[x])
-  },
-)
-
 export const getUndelegationsAmountByValidatorAddress = memoize(
   (
     allUndelegationsEntries: Record<PubKey, chainAdapters.cosmos.UndelegationEntry[]>,
@@ -424,14 +408,16 @@ export const selectActiveStakingOpportunityDataByAssetId = createDeepEqualOutput
   selectAllDelegationsCryptoAmountByAssetId,
   selectAllUnbondingsEntriesByAssetId,
   selectAllRewardsByAssetId,
-  selectAllValidators,
+  selectPortfolioAccounts,
   (
     allDelegationsAmount,
     allUndelegationsEntries,
     allRewards,
-    allValidators,
+    allPortfolioAccounts,
   ): ActiveStakingOpportunity[] => {
-    return Object.entries(allValidators).reduce(
+    console.log('allPortfolioAccounts', { allPortfolioAccounts })
+    return [] // TODO: remove
+    return ([allPortfolioAccounts?.validatorIds] || []).reduce(
       (acc: ActiveStakingOpportunity[], [validatorAddress, { apr, moniker, tokens }]) => {
         const delegationsAmount = allDelegationsAmount[validatorAddress] ?? '0'
 

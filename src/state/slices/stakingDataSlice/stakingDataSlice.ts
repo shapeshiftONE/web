@@ -7,30 +7,18 @@ import { getChainAdapters } from 'context/PluginProvider/PluginProvider'
 
 export type PubKey = string
 
-type AllValidatorDataArgs = { chainId: CAIP2 }
-
 type SingleValidatorDataArgs = { chainId: CAIP2; validatorAddress: PubKey }
 
 export type StakingDataStatus = 'idle' | 'loading' | 'loaded'
-
-export type Staking = {
-  delegations: chainAdapters.cosmos.Delegation[]
-  redelegations: chainAdapters.cosmos.Redelegation[]
-  undelegations: chainAdapters.cosmos.Undelegation[]
-  rewards: chainAdapters.cosmos.ValidatorReward[]
-}
 
 export type Validators = {
   validators: chainAdapters.cosmos.Validator[]
 }
 
-export type StakingDataByAccountSpecifier = {
-  [k: string]: Staking
-}
-
 export type StakingData = {
   validatorStatus: StakingDataStatus
   byValidator: ValidatorDataByPubKey
+  validatorIds: string[]
 }
 
 export type ValidatorDataByPubKey = {
@@ -39,6 +27,7 @@ export type ValidatorDataByPubKey = {
 
 const initialState: StakingData = {
   byValidator: {},
+  validatorIds: [],
   validatorStatus: 'idle',
 }
 
@@ -47,6 +36,7 @@ const updateOrInsertValidatorData = (
   validators: chainAdapters.cosmos.Validator[],
 ) => {
   validators.forEach(validator => {
+    stakingDataState.validatorIds.push(validator.address)
     stakingDataState.byValidator[validator.address] = validator
   })
 }
@@ -78,38 +68,6 @@ export const stakingDataApi = createApi({
   // refetch if network connection is dropped, useful for mobile
   refetchOnReconnect: true,
   endpoints: build => ({
-    getAllValidatorsData: build.query<Validators, AllValidatorDataArgs>({
-      queryFn: async ({ chainId }, { dispatch }) => {
-        const chainAdapters = getChainAdapters()
-        const adapter = (await chainAdapters.byChainId(
-          chainId,
-        )) as CosmosSdkBaseAdapter<ChainTypes.Cosmos>
-        dispatch(stakingData.actions.setValidatorStatus('loading'))
-        try {
-          const data = await adapter.getValidators()
-          dispatch(
-            stakingData.actions.upsertValidatorData({
-              validators: data,
-            }),
-          )
-          return {
-            data: {
-              validators: data,
-            },
-          }
-        } catch (e) {
-          console.error('Error fetching all validators data', e)
-          return {
-            error: {
-              data: `Error fetching staking data`,
-              status: 500,
-            },
-          }
-        } finally {
-          dispatch(stakingData.actions.setValidatorStatus('loaded'))
-        }
-      },
-    }),
     getValidatorData: build.query<chainAdapters.cosmos.Validator, SingleValidatorDataArgs>({
       queryFn: async ({ chainId, validatorAddress }, { dispatch }) => {
         const chainAdapters = getChainAdapters()

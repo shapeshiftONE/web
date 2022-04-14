@@ -3,14 +3,12 @@ import {
   mockStakingData,
   mockStakingDataWithOnlyRewards,
   mockStakingDataWithOnlyUndelegations,
-  mockStakingWithUnknownValidators,
   mockValidatorData,
 } from 'test/mocks/stakingData'
 import { clearState, store } from 'state/store'
 
 import {
   selectActiveStakingOpportunityDataByAssetId,
-  selectNonloadedValidators,
   selectRewardsAmountByAssetId,
   selectSingleValidator,
   selectStakingDataIsLoaded,
@@ -236,66 +234,6 @@ describe('stakingDataSlice', () => {
             cosmosAssetId,
           )
           expect(selected).toMatchSnapshot()
-        })
-      })
-    })
-
-    describe('selectNonloadedValidators', () => {
-      it('returns empty array on initial state', async () => {
-        const selected = selectNonloadedValidators(store.getState(), cosmosAccountSpecifier)
-        expect(selected).toEqual([])
-      })
-
-      it('returns all validators in staking data when staking data is loaded but validators are not', async () => {
-        store.dispatch(
-          stakingData.actions.upsertStakingData({
-            accountSpecifier: cosmosAccountSpecifier,
-            stakingData: mockStakingData,
-          }),
-        )
-
-        const selected = selectNonloadedValidators(store.getState(), cosmosAccountSpecifier)
-        expect(selected).toEqual([
-          'cosmosvaloper1qtxec3ggeuwnca9mmngw7vf6ctw54cppey02fs',
-          'cosmosvaloper199mlc7fr6ll5t54w7tts7f4s0cvnqgc59nmuxf',
-          'cosmosvaloper1clpqr4nrk4khgkxj78fcwwh6dl3uw4epsluffn',
-        ])
-      })
-
-      describe('validators and staking data are loaded', () => {
-        beforeEach(() => {
-          store.dispatch(
-            stakingData.actions.upsertValidatorData({
-              validators: mockValidatorData,
-            }),
-          )
-        })
-
-        it('returns empty array when all validators in stakingData are loaded / known', async () => {
-          store.dispatch(
-            stakingData.actions.upsertStakingData({
-              accountSpecifier: cosmosAccountSpecifier,
-              stakingData: mockStakingData,
-            }),
-          )
-
-          const selected = selectNonloadedValidators(store.getState(), cosmosAccountSpecifier)
-          expect(selected).toEqual([])
-        })
-
-        it('returns correct array when some validators in stakingData are not loaded / unknown', async () => {
-          store.dispatch(
-            stakingData.actions.upsertStakingData({
-              accountSpecifier: cosmosAccountSpecifier,
-              stakingData: mockStakingWithUnknownValidators,
-            }),
-          )
-
-          const selected = selectNonloadedValidators(store.getState(), cosmosAccountSpecifier)
-          expect(selected).toEqual([
-            'cosmosvaloper1r9lxkpqre6j4487ut882xchgr7rdtx3x76gtdp',
-            'cosmosvaloper1yvwqd5rdtuaw25mcqhz794dvgq9k9yeh8mjcdh',
-          ])
         })
       })
     })

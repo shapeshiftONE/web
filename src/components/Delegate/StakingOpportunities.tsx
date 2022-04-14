@@ -22,8 +22,15 @@ import { RawText, Text } from 'components/Text'
 import { useModal } from 'hooks/useModal/useModal'
 import { bnOrZero } from 'lib/bignumber/bignumber'
 import { useCosmosStakingBalances } from 'pages/Defi/hooks/useCosmosStakingBalances'
-import { selectAssetByCAIP19, selectMarketDataById } from 'state/slices/selectors'
-import { ActiveStakingOpportunity } from 'state/slices/stakingDataSlice/selectors'
+import {
+  selectAssetByCAIP19,
+  selectMarketDataById,
+  selectPortfolioAccounts,
+} from 'state/slices/selectors'
+import {
+  ActiveStakingOpportunity,
+  selectSingleValidator,
+} from 'state/slices/stakingDataSlice/selectors'
 import { useAppSelector } from 'state/store'
 
 type StakingOpportunitiesProps = {
@@ -65,11 +72,17 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
   const asset = useAppSelector(state => selectAssetByCAIP19(state, assetId))
   const marketData = useAppSelector(state => selectMarketDataById(state, assetId))
 
-  const { activeStakingOpportunities, stakingOpportunities, isLoaded } = useCosmosStakingBalances({
+  const { stakingOpportunities } = useCosmosStakingBalances({
     assetId,
   })
 
-  const hasActiveStakingOpportunities = activeStakingOpportunities.length !== 0
+  const accounts = useAppSelector(state => selectPortfolioAccounts(state))
+  const validatorIds =
+    accounts?.['cosmos:cosmoshub-4:cosmos1a8l3srqyk5krvzhkt7cyzy52yxcght6322w2qy']?.validatorIds ||
+    []
+
+  const isLoaded = true
+
   const { cosmosGetStarted, cosmosStaking } = useModal()
 
   const handleGetStartedClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -84,19 +97,23 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
     })
   }
 
-  const columns: Column<ActiveStakingOpportunity>[] = useMemo(
+  const columns: Column<string>[] = useMemo(
     () => [
       {
         Header: <Text translation='defi.validator' />,
         id: 'moniker',
         display: { base: 'table-cell' },
-        Cell: ({ row }: { row: { original: ActiveStakingOpportunity } }) => (
-          <ValidatorName
-            validatorAddress={row.original.address}
-            moniker={row.original.moniker}
-            isStaking={hasActiveStakingOpportunities}
-          />
-        ),
+        Cell: ({ row }: { row: { original: any } }) => {
+          const validator = useAppSelector(state => selectSingleValidator(state, '', row.original))
+
+          return (
+            <ValidatorName
+              validatorAddress={validator?.address || ''}
+              moniker={validator?.moniker || ''}
+              isStaking={true}
+            />
+          )
+        },
         disableSortBy: true,
       },
       {
@@ -116,7 +133,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         isNumeric: true,
         display: { base: 'table-cell' },
         Cell: ({ value }: { value: string }) => {
-          return hasActiveStakingOpportunities ? (
+          return true ? (
             <Amount.Crypto
               value={value}
               symbol={asset.symbol}
@@ -134,7 +151,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         accessor: 'rewards',
         display: { base: 'table-cell' },
         Cell: ({ value }: { value: string }) => {
-          return hasActiveStakingOpportunities ? (
+          return true ? (
             <HStack fontWeight={'normal'}>
               <Amount.Crypto
                 value={bnOrZero(value)
@@ -190,13 +207,10 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
       </Card.Header>
       <Card.Body pt={0} px={2}>
         <ReactTable
-          data={
-            !hasActiveStakingOpportunities && isLoaded
-              ? stakingOpportunities
-              : activeStakingOpportunities
-          }
+          // We just pass normalized validator IDs here. Everything we need can be gotten from selectors
+          data={validatorIds}
           columns={columns}
-          displayHeaders={hasActiveStakingOpportunities}
+          displayHeaders={true}
           onRowClick={handleStakedClick}
         />
       </Card.Body>

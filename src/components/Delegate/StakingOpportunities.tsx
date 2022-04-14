@@ -21,14 +21,15 @@ import { ReactTable } from 'components/ReactTable/ReactTable'
 import { RawText, Text } from 'components/Text'
 import { useModal } from 'hooks/useModal/useModal'
 import { bnOrZero } from 'lib/bignumber/bignumber'
-import { useCosmosStakingBalances } from 'pages/Defi/hooks/useCosmosStakingBalances'
 import {
+  selectAccountSpecifier,
   selectAssetByCAIP19,
   selectMarketDataById,
   selectPortfolioAccounts,
 } from 'state/slices/selectors'
 import {
   ActiveStakingOpportunity,
+  selectRewardsByValidator,
   selectSingleValidator,
 } from 'state/slices/stakingDataSlice/selectors'
 import { useAppSelector } from 'state/store'
@@ -72,16 +73,19 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
   const asset = useAppSelector(state => selectAssetByCAIP19(state, assetId))
   const marketData = useAppSelector(state => selectMarketDataById(state, assetId))
 
-  const { stakingOpportunities } = useCosmosStakingBalances({
-    assetId,
-  })
+  const accountSpecifiers = useAppSelector(state => selectAccountSpecifier(state, asset?.caip2))
+  const accountSpecifier = accountSpecifiers?.[0]
 
   const accounts = useAppSelector(state => selectPortfolioAccounts(state))
-  const validatorIds =
-    accounts?.['cosmos:cosmoshub-4:cosmos1a8l3srqyk5krvzhkt7cyzy52yxcght6322w2qy']?.validatorIds ||
-    []
-
-  const isLoaded = true
+  // TODO: This should be its own selector as we have currently
+  const rows = useMemo(
+    () =>
+      accounts?.[accountSpecifier]?.validatorIds.map(validatorId => ({
+        validatorId,
+        accountSpecifier,
+      })) || [],
+    [accountSpecifier, accounts],
+  )
 
   const { cosmosGetStarted, cosmosStaking } = useModal()
 
@@ -97,49 +101,57 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
     })
   }
 
-  const columns: Column<string>[] = useMemo(
+  const columns: Column<{ validatorId: string; accountSpecifier: string }>[] = useMemo(
     () => [
       {
         Header: <Text translation='defi.validator' />,
         id: 'moniker',
         display: { base: 'table-cell' },
         Cell: ({ row }: { row: { original: any } }) => {
-          const validator = useAppSelector(state => selectSingleValidator(state, '', row.original))
+          const validator = useAppSelector(state =>
+            selectSingleValidator(state, '', row.original.validatorId),
+          )
 
           return (
-            <ValidatorName
-              validatorAddress={validator?.address || ''}
-              moniker={validator?.moniker || ''}
-              isStaking={true}
-            />
+            <Skeleton isLoaded={Boolean(validator)}>
+              <ValidatorName
+                validatorAddress={validator?.address || ''}
+                moniker={validator?.moniker || ''}
+                isStaking={true}
+              />
+            </Skeleton>
           )
         },
         disableSortBy: true,
       },
       {
         Header: <Text translation='defi.apr' />,
-        accessor: 'apr',
+        id: 'apr',
         display: { base: 'table-cell' },
-        Cell: ({ value }: { value: string }) => (
-          <Skeleton isLoaded={isLoaded}>
-            <AprTag percentage={value} showAprSuffix />
-          </Skeleton>
-        ),
+        Cell: ({ row }: { row: { original: any } }) => {
+          const validator = useAppSelector(state =>
+            selectSingleValidator(state, '', row.original.validatorId),
+          )
+
+          return (
+            <Skeleton isLoaded={Boolean(validator)}>
+              <AprTag percentage={validator?.apr} showAprSuffix />
+            </Skeleton>
+          )
+        },
         disableSortBy: true,
       },
       {
         Header: <Text translation='defi.stakedAmount' />,
-        accessor: 'cryptoAmount',
+        id: 'cryptoAmount',
         isNumeric: true,
         display: { base: 'table-cell' },
-        Cell: ({ value }: { value: string }) => {
-          return true ? (
-            <Amount.Crypto
-              value={value}
-              symbol={asset.symbol}
-              color='white'
-              fontWeight={'normal'}
-            />
+        Cell: ({ row }: { row: { original: any } }) => {
+          const validator = useAppSelector(state =>
+            selectSingleValidator(state, '', row.original.validatorId),
+          )
+          return Boolean(validator) ? (
+            <Amount.Crypto value={0} symbol={asset.symbol} color='white' fontWeight={'normal'} />
           ) : (
             <Box minWidth={{ base: '0px', md: '200px' }} />
           )
@@ -148,20 +160,31 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
       },
       {
         Header: <Text translation='defi.rewards' />,
-        accessor: 'rewards',
+        id: 'rewards',
         display: { base: 'table-cell' },
-        Cell: ({ value }: { value: string }) => {
-          return true ? (
+        Cell: ({ row }: { row: { original: any } }) => {
+          const validator = useAppSelector(state =>
+            selectSingleValidator(state, '', row.original.validatorId),
+          )
+          const rewards = useAppSelector(state =>
+            selectRewardsByValidator(
+              state,
+              row.original.accountSpecifier,
+              row.original.validatorId,
+            ),
+          )
+
+          return Boolean(validator) ? (
             <HStack fontWeight={'normal'}>
               <Amount.Crypto
-                value={bnOrZero(value)
+                value={bnOrZero(rewards)
                   .div(`1e+${asset.precision}`)
                   .decimalPlaces(asset.precision)
                   .toString()}
                 symbol={asset.symbol}
               />
               <Amount.Fiat
-                value={bnOrZero(value)
+                value={bnOrZero(rewards)
                   .div(`1e+${asset.precision}`)
                   .times(bnOrZero(marketData.price))
                   .toPrecision()}
@@ -190,7 +213,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
     // React-tables requires the use of a useMemo
     // but we do not want it to recompute the values onClick
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isLoaded],
+    [accountSpecifier],
   )
   return (
     <Card>
@@ -208,7 +231,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
       <Card.Body pt={0} px={2}>
         <ReactTable
           // We just pass normalized validator IDs here. Everything we need can be gotten from selectors
-          data={validatorIds}
+          data={rows}
           columns={columns}
           displayHeaders={true}
           onRowClick={handleStakedClick}

@@ -228,14 +228,16 @@ export const PortfolioProvider = ({ children }: { children: React.ReactNode }) =
 
     if (tx.caip2 === cosmosChainId) {
       // TODO: this probably shouldn't belong here, otherwise it will only work after first websocket Tx
+      // Is there a better place to move this in so we can load validators right after portfolio accounts are available?
       const validators =
-        portfolioAccounts['cosmos:cosmoshub-4:cosmos1a8l3srqyk5krvzhkt7cyzy52yxcght6322w2qy']
-          ?.validatorIds
+        // TODO: That's a hacky hack during dev, remove me obviously - not a clean nor reliable way to get accountSpecifier
+        portfolioAccounts[`cosmos:cosmoshub-4:${tx.address}`]?.validatorIds
       validators?.length &&
         validators.forEach(validatorAddress => {
           // and then use .select() to determine loading state on the presence or not of that validator in the RTK slice
           dispatch(
             stakingDataApi.endpoints.getValidatorData.initiate({
+              // TODO: Make me programmatic
               chainId: 'cosmos:cosmoshub-4',
               validatorAddress,
             }),

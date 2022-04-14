@@ -47,9 +47,6 @@ export type MergedStakingOpportunity = chainAdapters.cosmos.Validator & {
 export function useCosmosStakingBalances({
   assetId,
 }: UseCosmosStakingBalancesProps): UseCosmosStakingBalancesReturn {
-  const isStakingDataLoaded = useAppSelector(selectStakingDataIsLoaded)
-  const isValidatorDataLoaded = useAppSelector(selectValidatorIsLoaded)
-  const isLoaded = isStakingDataLoaded && isValidatorDataLoaded
   const marketData = useAppSelector(state => selectMarketDataById(state, assetId))
   const asset = useAppSelector(state => selectAssetByCAIP19(state, assetId))
   const dispatch = useAppDispatch()
@@ -73,6 +70,7 @@ export function useCosmosStakingBalances({
 
   const mergedActiveStakingOpportunities = useMemo(() => {
     return Object.values(stakingOpportunities).map(opportunity => {
+      console.log({ opportunity })
       const fiatAmount = bnOrZero(0)
       // const fiatAmount = bnOrZero(opportunity.cryptoAmount)
       // .div(`1e+${asset.precision}`)

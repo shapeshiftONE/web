@@ -124,73 +124,45 @@ const transformFoxy = (foxies: MergedFoxyOpportunity[]): EarnOpportunityType[] =
 }
 
 const useTransformCosmosStaking = (
-  cosmosActiveStakingOpportunities: MergedActiveStakingOpportunity[],
   cosmosStakingOpportunities: MergedStakingOpportunity[],
 ): EarnOpportunityType[] => {
   const translate = useTranslate()
-  if (cosmosActiveStakingOpportunities.length === 0) {
-    if (cosmosStakingOpportunities.length === 0) {
-      return []
+  return cosmosStakingOpportunities.map(staking => {
+    return {
+      type: DefiType.TokenStaking,
+      assetId: staking.assetId,
+      provider: chainTypeToLabel(staking.chain),
+      contractAddress: staking.address,
+      tokenAddress: staking.tokenAddress,
+      rewardAddress: '',
+      tvl: staking.tvl,
+      apy: staking.apr,
+      chain: staking.chain,
+      moniker: 'TODO',
+      cryptoAmount: '4242', // TODO: from selector
+      fiatAmount: '',
+      showAssetSymbol: true,
     }
-
-    return cosmosStakingOpportunities.map(staking => {
-      return {
-        type: DefiType.TokenStaking,
-        assetId: staking.assetId,
-        provider: chainTypeToLabel(staking.chain),
-        contractAddress: staking.address,
-        tokenAddress: staking.tokenAddress,
-        rewardAddress: '',
-        tvl: staking.tvl,
-        apy: staking.apr,
-        chain: staking.chain,
-        cryptoAmount: '',
-        fiatAmount: '',
-        showAssetSymbol: true,
-      }
-    })
-  }
-
-  return cosmosActiveStakingOpportunities
-    .map(staking => {
-      return {
-        type: DefiType.TokenStaking,
-        provider: chainTypeToLabel(staking.chain),
-        version: translate('defi.validatorMoniker', { moniker: staking.moniker }),
-        contractAddress: staking.address,
-        tokenAddress: staking.tokenAddress,
-        rewardAddress: '',
-        tvl: staking.tvl,
-        apy: staking.apr,
-        chain: staking.chain,
-        assetId: staking.assetId,
-        fiatAmount: staking.fiatAmount ?? '',
-        cryptoAmount: staking.cryptoAmount ?? '',
-        moniker: staking.moniker,
-        showAssetSymbol: true,
-      }
-    })
-    .sort((opportunityA, opportunityB) => {
-      return bnOrZero(opportunityA.cryptoAmount).gt(bnOrZero(opportunityB.cryptoAmount)) ? -1 : 1
-    })
+  })
+  // .sort((opportunityA, opportunityB) => {
+  // return bnOrZero(opportunityA.cryptoAmount).gt(bnOrZero(opportunityB.cryptoAmount)) ? -1 : 1
+  // })
 }
 
 type NormalizeOpportunitiesProps = {
   vaultArray: SupportedYearnVault[]
   foxyArray: MergedFoxyOpportunity[]
-  cosmosActiveStakingOpportunities: MergedActiveStakingOpportunity[]
   cosmosStakingOpportunities: MergedStakingOpportunity[]
 }
 
 export const useNormalizeOpportunities = ({
   vaultArray,
   foxyArray,
-  cosmosActiveStakingOpportunities = [],
   cosmosStakingOpportunities = [],
 }: NormalizeOpportunitiesProps): EarnOpportunityType[] => {
   return [
     ...transformFoxy(foxyArray),
-    ...useTransformCosmosStaking(cosmosActiveStakingOpportunities, cosmosStakingOpportunities),
+    ...useTransformCosmosStaking(cosmosStakingOpportunities),
     ...useTransformVault(vaultArray),
   ]
 }

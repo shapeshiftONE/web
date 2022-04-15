@@ -3,14 +3,12 @@ import { chainAdapters, ChainTypes } from '@shapeshiftoss/types'
 import { useEffect, useMemo } from 'react'
 import { BigNumber, bnOrZero } from 'lib/bignumber/bignumber'
 import {
+  ActiveStakingOpportunity,
   selectAccountSpecifier,
   selectAssetByCAIP19,
   selectMarketDataById,
 } from 'state/slices/selectors'
-import {
-  ActiveStakingOpportunity,
-  selectSingleValidator,
-} from 'state/slices/validatorDataSlice/selectors'
+import { selectSingleValidator } from 'state/slices/validatorDataSlice/selectors'
 import { useAppDispatch, useAppSelector } from 'state/store'
 
 const SHAPESHIFT_VALIDATOR_ADDRESS = 'cosmosvaloper199mlc7fr6ll5t54w7tts7f4s0cvnqgc59nmuxf'
@@ -20,7 +18,6 @@ type UseCosmosStakingBalancesProps = {
 }
 
 export type UseCosmosStakingBalancesReturn = {
-  activeStakingOpportunities: MergedActiveStakingOpportunity[]
   stakingOpportunities: MergedStakingOpportunity[]
   totalBalance: string
   isLoaded: boolean
@@ -54,7 +51,6 @@ export function useCosmosStakingBalances({
   const shapeshiftValidator = useAppSelector(state =>
     selectSingleValidator(state, accountSpecifier, SHAPESHIFT_VALIDATOR_ADDRESS),
   )
-  console.log({ shapeshiftValidator })
   const stakingOpportunities = useMemo(() => {
     return [
       {
@@ -67,7 +63,6 @@ export function useCosmosStakingBalances({
 
   const mergedActiveStakingOpportunities = useMemo(() => {
     return Object.values(stakingOpportunities).map(opportunity => {
-      console.log({ opportunity })
       const fiatAmount = bnOrZero(0)
       // const fiatAmount = bnOrZero(opportunity.cryptoAmount)
       // .div(`1e+${asset.precision}`)
@@ -126,13 +121,14 @@ export function useCosmosStakingBalances({
 
   useEffect(() => {
     ;(async () => {
-      if (!isValidatorDataLoaded) return
+      // if (!isValidatorDataLoaded) return // TODO: use select() to detect loaded state
     })()
-  }, [isValidatorDataLoaded, dispatch, chainId])
+  }, [dispatch, chainId])
 
+  console.log({ mergedStakingOpportunities })
   return {
     stakingOpportunities: mergedStakingOpportunities,
-    isLoaded,
+    isLoaded: true,
     totalBalance: totalBalance.toString(),
   }
 }

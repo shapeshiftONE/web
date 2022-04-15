@@ -19,6 +19,7 @@ const DefiHeader = () => {
 
 export const Overview = () => {
   const balances = useEarnBalances()
+  console.log({ balances })
   const walletBalance = useSelector(selectPortfolioTotalFiatBalance)
   return (
     <Main titleComponent={<DefiHeader />}>

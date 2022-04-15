@@ -17,7 +17,7 @@ import { selectBalanceThreshold } from 'state/slices/preferencesSlice/selectors'
 import { selectValidatorAddress } from 'state/slices/validatorDataSlice/selectors'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
-import { PubKey } from '../stakingDataSlice/validatorDataSlice'
+import { PubKey } from './portfolioSliceCommon'
 import {
   PortfolioAccountBalances,
   PortfolioAccountSpecifiers,
@@ -54,6 +54,8 @@ const selectAssetIdParamArityFour = (
   _validatorAddress: PubKey,
   assetId: CAIP19,
 ) => assetId
+
+export const selectPortfolioAccounts = (state: ReduxState) => state.portfolio.accounts.byId
 
 export const selectPortfolioAssetIds = createDeepEqualOutputSelector(
   (state: ReduxState): PortfolioAssetBalances['ids'] => state.portfolio.assetBalances.ids,
@@ -143,58 +145,63 @@ export const selectPortfolioTotalFiatBalance = createSelector(
 )
 
 export const selectAllStakingDelegationCrypto = createSelector(
-  // TODO: WIP
-  state => state,
-  stakingData => {
-    return {} // TODO: implement me
-    const allStakingData = Object.entries(stakingData.byAccountSpecifier)
-    return reduce(
+  selectPortfolioAccounts,
+  portfolioAccounts => {
+    // TODO: Implement this better
+    const allStakingData = Object.entries(portfolioAccounts)
+    const allStakingDelegationCrypto = reduce(
       allStakingData,
-      (acc, val) => {
-        const accountId = val[0]
-        const delegations = val[1].delegations
+      (acc, [accountSpecifier, portfolioData]) => {
+        if (!portfolioData.stakingData) return acc
+        const delegations = portfolioData.stakingData.delegations
         const delegationSum = reduce(
           delegations,
           (acc, delegation) => acc.plus(bnOrZero(delegation.amount)),
           bn(0),
         )
-        return { ...acc, [accountId]: delegationSum }
+        return { ...acc, [accountSpecifier]: delegationSum }
       },
       {},
     )
+
+    return allStakingDelegationCrypto
   },
 )
 export const selectTotalStakingDelegationFiat = createSelector(
   selectAllStakingDelegationCrypto,
   selectMarketData,
   (state: ReduxState) => state.assets.byId,
-  (allStaked: { [k: string]: string }, md, assets) => {
+  (allStaked: { [k: string]: string }, marketData, assetsById) => {
     const allStakingData = Object.entries(allStaked)
 
-    return reduce(
+    const totalStakingDelegationFiat = reduce(
       allStakingData,
-      (acc, val) => {
-        const assetId = accountIdToFeeAssetId(val[0])
-        const baseUnitAmount = val[1]
-        const price = md[assetId]?.price
-        const amount = fromBaseUnit(baseUnitAmount, assets[assetId].precision ?? 0)
+      (acc, [accountSpecifier, baseUnitAmount]) => {
+        const assetId = accountIdToFeeAssetId(accountSpecifier)
+        const price = marketData[assetId]?.price
+        const amount = fromBaseUnit(baseUnitAmount, assetsById[assetId].precision ?? 0)
         return bnOrZero(amount).times(price).plus(acc)
       },
       bn(0),
     )
+
+    return totalStakingDelegationFiat
   },
 )
 export const selectPortfolioTotalFiatBalanceWithDelegations = createSelector(
   selectPortfolioTotalFiatBalance,
   selectTotalStakingDelegationFiat,
-  (portfolioFiatBalance, delegationFiatBalance): string =>
-    bnOrZero(portfolioFiatBalance).plus(delegationFiatBalance).toString(),
+  (portfolioFiatBalance, delegationFiatBalance): string => {
+    return bnOrZero(portfolioFiatBalance).plus(delegationFiatBalance).toString()
+  },
 )
 
 export const selectPortfolioFiatBalanceByAssetId = createSelector(
   selectPortfolioFiatBalances,
   selectAssetIdParam,
-  (portfolioFiatBalances, assetId) => portfolioFiatBalances[assetId],
+  (portfolioFiatBalances, assetId) => {
+    return portfolioFiatBalances[assetId]
+  },
 )
 
 export const selectPortfolioFiatBalanceByFilter = createSelector(
@@ -499,8 +506,6 @@ export const selectPortfolioIsEmpty = createSelector(
   selectPortfolioAssetIds,
   (assetIds): boolean => !assetIds.length,
 )
-
-export const selectPortfolioAccounts = (state: ReduxState) => state.portfolio.accounts.byId
 
 export const selectPortfolioAssetAccounts = createSelector(
   selectPortfolioAccounts,

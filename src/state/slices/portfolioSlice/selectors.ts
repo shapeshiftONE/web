@@ -14,10 +14,10 @@ import { selectAssets } from 'state/slices/assetsSlice/selectors'
 import { selectMarketData } from 'state/slices/marketDataSlice/selectors'
 import { accountIdToFeeAssetId } from 'state/slices/portfolioSlice/utils'
 import { selectBalanceThreshold } from 'state/slices/preferencesSlice/selectors'
-import { selectValidatorAddress } from 'state/slices/stakingDataSlice/selectors'
+import { selectValidatorAddress } from 'state/slices/validatorDataSlice/selectors'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
-import { PubKey } from '../stakingDataSlice/stakingDataSlice'
+import { PubKey } from '../stakingDataSlice/validatorDataSlice'
 import {
   PortfolioAccountBalances,
   PortfolioAccountSpecifiers,
@@ -758,13 +758,18 @@ export const selectAllUnbondingsEntriesByAssetId = createDeepEqualOutputSelector
 
       return acc
     }, {})
+
+    return validators
   },
 )
 
 export const selectAllUnbondingsEntriesByAssetIdAndValidator = createSelector(
   selectAllUnbondingsEntriesByAssetId,
   selectValidatorAddress,
-  (unbondingEntries, validatorAddress) => unbondingEntries[validatorAddress],
+  (unbondingEntries, validatorAddress) => {
+    console.log({ validatorAddress, unbondingEntries })
+    return unbondingEntries[validatorAddress]
+  },
 )
 
 export const selectUnbondingCryptoAmountByAssetIdAndValidator = createSelector(

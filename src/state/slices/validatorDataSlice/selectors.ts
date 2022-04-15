@@ -2,7 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { CAIP10 } from '@shapeshiftoss/caip'
 import { ReduxState } from 'state/reducer'
 
-import { PubKey } from './stakingDataSlice'
+import { PubKey } from './validatorDataSlice'
 
 export const selectValidatorAddress = (
   _state: ReduxState,

@@ -3,7 +3,7 @@ import {
   MergedActiveStakingOpportunity,
   MergedStakingOpportunity,
 } from 'pages/Defi/hooks/useCosmosStakingBalances'
-import { Staking } from 'state/slices/stakingDataSlice/stakingDataSlice'
+import { Staking } from 'state/slices/portfolioSlice/portfolioSliceCommon'
 
 export const mockStakingData: Staking = {
   delegations: [

@@ -10,8 +10,7 @@ import {
 import {
   ActiveStakingOpportunity,
   selectSingleValidator,
-} from 'state/slices/stakingDataSlice/selectors'
-import { stakingDataApi } from 'state/slices/stakingDataSlice/stakingDataSlice'
+} from 'state/slices/validatorDataSlice/selectors'
 import { useAppDispatch, useAppSelector } from 'state/store'
 
 const SHAPESHIFT_VALIDATOR_ADDRESS = 'cosmosvaloper199mlc7fr6ll5t54w7tts7f4s0cvnqgc59nmuxf'

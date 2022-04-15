@@ -10,8 +10,8 @@ import { assetApi } from './slices/assetsSlice/assetsSlice'
 import { marketApi } from './slices/marketDataSlice/marketDataSlice'
 import { portfolioApi } from './slices/portfolioSlice/portfolioSlice'
 import * as selectors from './slices/selectors'
-import { validatorDataApi } from './slices/stakingDataSlice/stakingDataSlice'
 import { txHistoryApi } from './slices/txHistorySlice/txHistorySlice'
+import { validatorDataApi } from './slices/validatorDataSlice/validatorDataSlice'
 
 const persistConfig = {
   key: 'root',

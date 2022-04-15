@@ -11,7 +11,6 @@ import {
 import cloneDeep from 'lodash/cloneDeep'
 import last from 'lodash/last'
 import toLower from 'lodash/toLower'
-import uniq from 'lodash/uniq'
 import { bn, bnOrZero } from 'lib/bignumber/bignumber'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
@@ -181,7 +180,7 @@ export const accountToPortfolio: AccountToPortfolio = args => {
         portfolio.accountBalances.ids.push(accountSpecifier)
         portfolio.accountSpecifiers.ids.push(accountSpecifier)
 
-        portfolio.accounts.byId[accountSpecifier] = { assetIds: [] }
+        portfolio.accounts.byId[accountSpecifier] = { assetIds: [], validatorIds: [] }
         portfolio.accounts.byId[accountSpecifier].assetIds.push(caip19)
         portfolio.accounts.ids.push(accountSpecifier)
 
@@ -282,7 +281,7 @@ export const accountToPortfolio: AccountToPortfolio = args => {
 
         const {
           chainSpecific: { delegations, redelegations, undelegations, rewards },
-        } = account as any // TODO: tsc pls
+        } = account as chainAdapters.Account<ChainTypes.Cosmos>
 
         const stakingData = {
           delegations,
@@ -293,19 +292,26 @@ export const accountToPortfolio: AccountToPortfolio = args => {
 
         portfolio.accounts.byId[accountSpecifier] = {
           assetIds: [],
-          stakingData: {},
+          stakingData: {
+            delegations: [],
+            undelegations: [],
+            redelegations: [],
+            rewards: [],
+          },
           validatorIds: [],
         }
 
         portfolio.accounts.byId[accountSpecifier].assetIds.push(caip19)
         portfolio.accounts.byId[accountSpecifier].stakingData = stakingData
         // TODO: refactor this before review
-        const uniqueValidatorAddresses = uniq(
-          [
-            stakingData.delegations.map(delegation => delegation.validator.address),
-            stakingData.undelegations.map(undelegation => undelegation.validator.address),
-            stakingData.rewards.map(reward => reward.validator.address),
-          ].flat(),
+        const uniqueValidatorAddresses = Array.from(
+          new Set(
+            [
+              stakingData.delegations.map(delegation => delegation.validator.address),
+              stakingData.undelegations.map(undelegation => undelegation.validator.address),
+              stakingData.rewards.map(reward => reward.validator.address),
+            ].flat(),
+          ),
         )
 
         portfolio.accounts.byId[accountSpecifier].validatorIds = uniqueValidatorAddresses

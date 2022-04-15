@@ -32,12 +32,12 @@ const initialState: ValidatorData = {
 }
 
 const updateOrInsertValidatorData = (
-  stakingDataState: ValidatorData,
+  validatorDataState: ValidatorData,
   validators: chainAdapters.cosmos.Validator[],
 ) => {
   validators.forEach(validator => {
-    stakingDataState.validatorIds.push(validator.address)
-    stakingDataState.byValidator[validator.address] = validator
+    validatorDataState.validatorIds.push(validator.address)
+    validatorDataState.byValidator[validator.address] = validator
   })
 }
 
@@ -52,11 +52,11 @@ export const validatorData = createSlice({
       state.validatorStatus = payload
     },
     upsertValidatorData: (
-      stakingDataState,
+      validatorDataState,
       { payload }: { payload: { validators: chainAdapters.cosmos.Validator[] } },
     ) => {
       // TODO(gomes): Improve the structure of this when we have cosmos websocket, for now this just inserts
-      updateOrInsertValidatorData(stakingDataState, payload.validators)
+      updateOrInsertValidatorData(validatorDataState, payload.validators)
     },
   },
 })
@@ -89,7 +89,7 @@ export const validatorDataApi = createApi({
           console.error('Error fetching single validator data', e)
           return {
             error: {
-              data: `Error fetching staking data`,
+              data: `Error fetching validator data`,
               status: 500,
             },
           }

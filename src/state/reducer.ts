@@ -7,8 +7,8 @@ import { assetApi, assets } from './slices/assetsSlice/assetsSlice'
 import { marketApi, marketData } from './slices/marketDataSlice/marketDataSlice'
 import { portfolio, portfolioApi } from './slices/portfolioSlice/portfolioSlice'
 import { preferences } from './slices/preferencesSlice/preferencesSlice'
-import { validatorData, validatorDataApi } from './slices/stakingDataSlice/stakingDataSlice'
 import { txHistory, txHistoryApi } from './slices/txHistorySlice/txHistorySlice'
+import { validatorData, validatorDataApi } from './slices/validatorDataSlice/validatorDataSlice'
 
 export const slices = {
   assets,

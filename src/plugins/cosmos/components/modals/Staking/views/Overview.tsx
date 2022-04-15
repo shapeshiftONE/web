@@ -10,12 +10,11 @@ import { Text } from 'components/Text'
 import { bnOrZero } from 'lib/bignumber/bignumber'
 import {
   selectAllUnbondingsEntriesByAssetIdAndValidator,
-  selectRewardsAmountByAssetId,
   selectRewardsByValidator,
   selectTotalBondingsBalanceByAssetId,
 } from 'state/slices/portfolioSlice/selectors'
 import { selectAssetByCAIP19, selectMarketDataById } from 'state/slices/selectors'
-import { selectSingleValidator } from 'state/slices/stakingDataSlice/selectors'
+import { selectSingleValidator } from 'state/slices/validatorDataSlice/selectors'
 import { useAppSelector } from 'state/store'
 
 type StakedProps = {
@@ -47,10 +46,6 @@ export const Overview: React.FC<StakedProps> = ({
   )
 
   const rewardsAmount = useAppSelector(state =>
-    selectRewardsAmountByAssetId(state, accountSpecifier, validatorAddress, asset.caip19),
-  )
-
-  const rewards = useAppSelector(state =>
     selectRewardsByValidator(state, accountSpecifier, validatorAddress),
   )
 

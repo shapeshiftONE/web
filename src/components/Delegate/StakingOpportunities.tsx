@@ -32,7 +32,7 @@ import {
   selectAssetByCAIP19,
   selectMarketDataById,
 } from 'state/slices/selectors'
-import { selectSingleValidator } from 'state/slices/stakingDataSlice/selectors'
+import { selectSingleValidator } from 'state/slices/validatorDataSlice/selectors'
 import { useAppSelector } from 'state/store'
 
 type StakingOpportunitiesProps = {
@@ -148,6 +148,10 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         isNumeric: true,
         display: { base: 'table-cell' },
         Cell: ({ row }: { row: { original: any } }) => {
+          const validator = useAppSelector(state =>
+            selectSingleValidator(state, '', row.original.validatorId),
+          )
+
           const totalBondings = useAppSelector(state =>
             selectTotalBondingsBalanceByAssetId(
               state,
@@ -157,7 +161,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
             ),
           )
 
-          return Boolean(true) ? (
+          return Boolean(validator) ? (
             <Amount.Crypto
               value={bnOrZero(totalBondings)
                 .div(`1e+${asset.precision}`)

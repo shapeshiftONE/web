@@ -146,6 +146,7 @@ export const selectAllStakingDelegationCrypto = createSelector(
   // TODO: WIP
   state => state,
   stakingData => {
+    return {} // TODO: implement me
     const allStakingData = Object.entries(stakingData.byAccountSpecifier)
     return reduce(
       allStakingData,
@@ -247,7 +248,6 @@ export const selectStakingDataByFilter = createSelector(
   selectAssetIdParamFromFilterOptional,
   selectAccountIdParamFromFilterOptional,
   (stakingData, _, accountId) => {
-    console.log({ stakingData })
     if (!accountId) return null
     return stakingData.byAccountSpecifier[accountId] || null
   },
@@ -743,11 +743,11 @@ export const selectUnbondingEntriesByAccountSpecifier = createDeepEqualOutputSel
 
 export const selectAllUnbondingsEntriesByAssetId = createDeepEqualOutputSelector(
   selectStakingDataByAccountSpecifier,
-  selectAssetIdParam,
+  selectAssetIdParamArityFour,
   (stakingData, selectedAssetId): Record<PubKey, chainAdapters.cosmos.UndelegationEntry[]> => {
     if (!stakingData || !stakingData.undelegations) return {}
 
-    return stakingData.undelegations.reduce<
+    const validators = stakingData.undelegations.reduce<
       Record<PubKey, chainAdapters.cosmos.UndelegationEntry[]>
     >((acc, { validator, entries }) => {
       if (!acc[validator.address]) {

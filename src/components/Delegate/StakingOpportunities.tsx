@@ -25,6 +25,7 @@ import {
   ActiveStakingOpportunity,
   selectPortfolioAccounts,
   selectRewardsByValidator,
+  selectTotalBondingsBalanceByAssetId,
 } from 'state/slices/portfolioSlice/selectors'
 import {
   selectAccountSpecifier,
@@ -147,11 +148,25 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         isNumeric: true,
         display: { base: 'table-cell' },
         Cell: ({ row }: { row: { original: any } }) => {
-          const validator = useAppSelector(state =>
-            selectSingleValidator(state, '', row.original.validatorId),
+          const totalBondings = useAppSelector(state =>
+            selectTotalBondingsBalanceByAssetId(
+              state,
+              accountSpecifier,
+              row.original.validatorId,
+              asset.caip19,
+            ),
           )
-          return Boolean(validator) ? (
-            <Amount.Crypto value={0} symbol={asset.symbol} color='white' fontWeight={'normal'} />
+
+          return Boolean(true) ? (
+            <Amount.Crypto
+              value={bnOrZero(totalBondings)
+                .div(`1e+${asset.precision}`)
+                .decimalPlaces(asset.precision)
+                .toString()}
+              symbol={asset.symbol}
+              color='white'
+              fontWeight={'normal'}
+            />
           ) : (
             <Box minWidth={{ base: '0px', md: '200px' }} />
           )

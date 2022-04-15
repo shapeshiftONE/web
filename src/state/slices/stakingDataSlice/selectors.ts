@@ -4,7 +4,6 @@ import { ReduxState } from 'state/reducer'
 
 import { PubKey } from './stakingDataSlice'
 
-// START VALIDATOR SELECTORS
 export const selectValidatorAddress = (
   _state: ReduxState,
   _accountSpecifier: CAIP10,
@@ -20,4 +19,3 @@ export const selectSingleValidator = createSelector(
     return stakingData.byValidator[validatorAddress] || null
   },
 )
-// END VALIDATOR SELECTORS

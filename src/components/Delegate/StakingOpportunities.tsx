@@ -81,6 +81,8 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
   // TODO: This should be its own selector as we have currently
   const rows = useMemo(
     () =>
+      // selectValidatorDataByValidatorIds
+      // selectStakingDataByValidatorIds
       accounts?.[accountSpecifier]?.validatorIds.map(validatorId => ({
         validatorId,
         accountSpecifier,
@@ -110,7 +112,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         display: { base: 'table-cell' },
         Cell: ({ row }: { row: { original: any } }) => {
           const validator = useAppSelector(state =>
-            selectSingleValidator(state, '', row.original.validatorId),
+            selectSingleValidator(state, row.original.validatorId),
           )
 
           return (
@@ -131,7 +133,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         display: { base: 'table-cell' },
         Cell: ({ row }: { row: { original: any } }) => {
           const validator = useAppSelector(state =>
-            selectSingleValidator(state, '', row.original.validatorId),
+            selectSingleValidator(state, row.original.validatorId),
           )
 
           return (
@@ -149,7 +151,7 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         display: { base: 'table-cell' },
         Cell: ({ row }: { row: { original: any } }) => {
           const validator = useAppSelector(state =>
-            selectSingleValidator(state, '', row.original.validatorId),
+            selectSingleValidator(state, row.original.validatorId),
           )
 
           const totalBondings = useAppSelector(state =>
@@ -183,14 +185,10 @@ export const StakingOpportunities = ({ assetId }: StakingOpportunitiesProps) => 
         display: { base: 'table-cell' },
         Cell: ({ row }: { row: { original: any } }) => {
           const validator = useAppSelector(state =>
-            selectSingleValidator(state, '', row.original.validatorId),
+            selectSingleValidator(state, row.original.validatorId),
           )
           const rewards = useAppSelector(state =>
-            selectRewardsByValidator(
-              state,
-              row.original.accountSpecifier,
-              row.original.validatorId,
-            ),
+            selectRewardsByValidator(state, row.original.validatorId),
           )
 
           return Boolean(validator) ? (

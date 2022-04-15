@@ -32,9 +32,9 @@ export const Overview: React.FC<StakedProps> = ({
   const asset = useAppSelector(state => selectAssetByCAIP19(state, assetId))
   const marketData = useAppSelector(state => selectMarketDataById(state, assetId))
 
-  const validatorInfo = useAppSelector(state => selectSingleValidator(state, '', validatorAddress))
+  const validatorInfo = useAppSelector(state => selectSingleValidator(state, validatorAddress))
   const totalBondings = useAppSelector(state =>
-    selectTotalBondingsBalanceByAssetId(state, accountSpecifier, validatorAddress, asset.caip19),
+    selectTotalBondingsBalanceByAssetId(state, validatorAddress, asset.caip19),
   )
   const undelegationEntries = useAppSelector(state =>
     selectAllUnbondingsEntriesByAssetIdAndValidator(

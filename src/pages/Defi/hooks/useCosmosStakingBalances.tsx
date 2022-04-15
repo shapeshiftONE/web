@@ -46,10 +46,10 @@ export function useCosmosStakingBalances({
   const dispatch = useAppDispatch()
 
   const accountSpecifiers = useAppSelector(state => selectAccountSpecifier(state, asset?.caip2))
-  const accountSpecifier = accountSpecifiers?.[0]
+  // const accountSpecifier = accountSpecifiers?.[0] // TODO: maybe remove me maybe not
 
   const shapeshiftValidator = useAppSelector(state =>
-    selectSingleValidator(state, accountSpecifier, SHAPESHIFT_VALIDATOR_ADDRESS),
+    selectSingleValidator(state, SHAPESHIFT_VALIDATOR_ADDRESS),
   )
   const stakingOpportunities = useMemo(() => {
     return [

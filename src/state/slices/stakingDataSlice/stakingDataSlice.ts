@@ -32,7 +32,7 @@ const initialState: ValidatorData = {
 }
 
 const updateOrInsertValidatorData = (
-  stakingDataState: StakingData,
+  stakingDataState: ValidatorData,
   validators: chainAdapters.cosmos.Validator[],
 ) => {
   validators.forEach(validator => {

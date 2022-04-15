@@ -29,6 +29,7 @@ import {
   PortfolioAssets,
   PortfolioBalancesById,
 } from 'state/slices/portfolioSlice/portfolioSliceCommon'
+import { selectTotalStakingDelegationCryptoByAccountSpecifier } from 'state/slices/portfolioSlice/selectors'
 import {
   selectPortfolioAssets,
   selectPortfolioCryptoBalancesByAccountIdAboveThreshold,
@@ -36,8 +37,6 @@ import {
   selectPriceHistoryTimeframe,
   selectTxsByFilter,
 } from 'state/slices/selectors'
-import { selectTotalStakingDelegationCryptoByAccountSpecifier } from 'state/slices/stakingDataSlice/selectors'
-import { stakingDataApi } from 'state/slices/stakingDataSlice/stakingDataSlice'
 import { selectRebasesByFilter } from 'state/slices/txHistorySlice/selectors'
 import { Tx } from 'state/slices/txHistorySlice/txHistorySlice'
 import { useAppDispatch, useAppSelector } from 'state/store'

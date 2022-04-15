@@ -22,16 +22,16 @@ import { RawText, Text } from 'components/Text'
 import { useModal } from 'hooks/useModal/useModal'
 import { bnOrZero } from 'lib/bignumber/bignumber'
 import {
+  ActiveStakingOpportunity,
+  selectPortfolioAccounts,
+  selectRewardsByValidator,
+} from 'state/slices/portfolioSlice/selectors'
+import {
   selectAccountSpecifier,
   selectAssetByCAIP19,
   selectMarketDataById,
-  selectPortfolioAccounts,
 } from 'state/slices/selectors'
-import {
-  ActiveStakingOpportunity,
-  selectRewardsByValidator,
-  selectSingleValidator,
-} from 'state/slices/stakingDataSlice/selectors'
+import { selectSingleValidator } from 'state/slices/stakingDataSlice/selectors'
 import { useAppSelector } from 'state/store'
 
 type StakingOpportunitiesProps = {

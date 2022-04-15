@@ -15,7 +15,6 @@ import uniq from 'lodash/uniq'
 import { bn, bnOrZero } from 'lib/bignumber/bignumber'
 
 import { AccountSpecifier } from '../accountSpecifiersSlice/accountSpecifiersSlice'
-import { StakingDataByAccountSpecifier } from '../stakingDataSlice/stakingDataSlice'
 import { initialState, Portfolio } from './portfolioSliceCommon'
 
 export type UtxoParamsAndAccountType = {
@@ -125,7 +124,8 @@ export const findAccountsByAssetId = (
   portfolioAccounts: {
     [k: string]: {
       assetIds: string[]
-      stakingDataByAccountSpecifier?: StakingDataByAccountSpecifier
+      // TODO: this is wrong
+      stakingDataByAccountSpecifier?: any
     }
   },
   assetId: CAIP19,

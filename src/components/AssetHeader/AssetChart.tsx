@@ -32,12 +32,9 @@ import { AccountSpecifier } from 'state/slices/accountSpecifiersSlice/accountSpe
 import {
   selectTotalCryptoBalanceWithDelegations,
   selectTotalFiatBalanceWithDelegations,
-} from 'state/slices/portfolioSlice/selectors'
-import {
-  selectAssetByCAIP19,
-  selectMarketDataById,
   selectTotalStakingDelegationCryptoByFilter,
-} from 'state/slices/selectors'
+} from 'state/slices/portfolioSlice/selectors'
+import { selectAssetByCAIP19, selectMarketDataById } from 'state/slices/selectors'
 import { useAppSelector } from 'state/store'
 
 import { HelperTooltip } from '../HelperTooltip/HelperTooltip'

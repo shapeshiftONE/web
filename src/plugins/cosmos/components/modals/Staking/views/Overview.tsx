@@ -8,14 +8,14 @@ import { StakedRow } from 'plugins/cosmos/components/StakedRow/StakedRow'
 import { UnbondingRow } from 'plugins/cosmos/components/UnbondingRow/UnbondingRow'
 import { Text } from 'components/Text'
 import { bnOrZero } from 'lib/bignumber/bignumber'
-import { selectAssetByCAIP19, selectMarketDataById } from 'state/slices/selectors'
 import {
   selectAllUnbondingsEntriesByAssetIdAndValidator,
   selectRewardsAmountByAssetId,
   selectRewardsByValidator,
-  selectSingleValidator,
   selectTotalBondingsBalanceByAssetId,
-} from 'state/slices/stakingDataSlice/selectors'
+} from 'state/slices/portfolioSlice/selectors'
+import { selectAssetByCAIP19, selectMarketDataById } from 'state/slices/selectors'
+import { selectSingleValidator } from 'state/slices/stakingDataSlice/selectors'
 import { useAppSelector } from 'state/store'
 
 type StakedProps = {

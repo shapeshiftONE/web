@@ -703,7 +703,7 @@ export const selectTotalStakingDelegationCryptoByAccountSpecifier = createSelect
 
 export const selectAllDelegationsCryptoAmountByAssetId = createSelector(
   selectStakingDataByAccountSpecifier,
-  selectAssetIdParam,
+  selectAssetIdParamArityFour,
   (stakingData, selectedAssetId): AmountByValidatorAddressType => {
     if (!stakingData || !stakingData.delegations?.length) return {}
 
@@ -716,7 +716,6 @@ export const selectAllDelegationsCryptoAmountByAssetId = createSelector(
       },
       {},
     )
-    console.log('coucou', { delegations })
     return delegations
   },
 )

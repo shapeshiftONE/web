@@ -368,18 +368,26 @@
       "label": {
       },
       "recoverySentence": {
+        "header": "복구 문장을 반드시 따로 기록해두세요",
+        "body": "KeepKey 화면에서 복구 문장을 보실 수 있습니다. 반드시 따로 적어두세요. 만약 KeepKey 장치를 잃어버리셨다면, 이 복구 문장을 통해서만 보유 자산에 접근하실 수 있습니다.",
+        "infoFirst": "KeepKey 화면에 나타난 문장은 '정확하게' 적어두셔야 합니다.",
+        "infoSecond": "이 복구 문장을 통해서 당신이 KeepKey에 보유한 모든 자산에 접근할 수 있습니다. 이 복구 문장은 '절대' 다른 어디에도 공유하지 마세요."
       },
       "wiped": {
+        "body": "KeepKey의 공장 초기화가 완료되었습니다. 이제, KeepKey에 기존의 복구 시드를 사용하여 복원하거나, 새 지갑을 만들 수 있습니다."
       }
     },
     "shapeShift": {
       "password": {
+        "header": "비밀번호를 입력하세요.",
         "walletName": "지갑 닉네임 (선택사항)",
+        "body": "비밀번호를 입력하여 지갑을 복호화하세요.",
         "placeholder": "비밀번호 입력",
         "show": "비밀번호 표시",
         "hide": "비밀번호 숨기기",
         "error": {
           "invalid": "잘못된 비밀번호",
+          "required": "비밀번호가 필요합니다.",
           "length": "비밀번호는 반드시 %{length}자 이상이어야 합니다.",
           "maxLength": "닉네임은 최대 %{length}자 이내로 작성해주세요."
         }
@@ -398,18 +406,23 @@
       "youHaveSent": "%{amount} %{symbol}를 성공적으로 전송하였습니다.",
       "tokenAddress": "토큰 주소",
       "scanQrCode": "QR 코드 스캔하기",
+      "permissionsButton": "다시 시도해주세요.",
       "sent": "%{asset} 전송 완료",
       "errorTitle": "%{asset} 전송에 실패하였습니다.",
       "errors": {
         "generic": "오류가 발생했습니다.",
         "notEnoughNativeToken": "가스 비용을 충당하기에 %{asset} 이 충분하지 않습니다.",
-        "transactionRejected": "사용자가 트랜잭션을 취소했습니다."
+        "transactionRejected": "사용자가 트랜잭션을 취소했습니다.",
+        "qrPermissions": "이 기능을 사용하려면 카메라에 대한 접근 권한 설정이 필요합니다. 이용하시는 브라우저에서 해당 설정을 변경해주세요."
       },
       "confirm": {
         "sendAsset": "%{asset} 전송",
         "send": "전송",
+        "sendTo": "보낼 주소",
         "edit": "수정",
+        "total": "총 수수료",
         "amount": "거래량",
+        "transactionFee": "TX 수수료",
         "fees": "수수료 %{feeType}"
       },
       "sendForm": {
@@ -418,9 +431,13 @@
         "charactersRemaining": "%{charactersRemaining}자 남음",
         "memoExplainer": "일부 %{assetSymbol} 수신자는 거래를 올바르게 처리하기 위해 메모가 필요할 수 있습니다.",
         "sendAsset": "%{asset} 전송",
+        "sendTo": "보낼 대상",
         "sendAmount": "보내는 금액",
         "max": "최대 / 최대치",
         "transactionFee": "거래 수수료",
+        "slow": "느린 속도",
+        "average": "평균 속도",
+        "fast": "빠른 속도",
         "enterAmount": "거래량 입력"
       }
     },
@@ -559,33 +576,74 @@
         "button": "PIN 저장"
       },
       "settings": {
+        "loadingText": "로딩 중...",
         "menuLabels": {
+          "bootloader": "부트로더",
+          "firmware": "펌웨어",
+          "pin": "PIN",
+          "pinCaching": "PIN 캐싱",
+          "advanced": "고급",
+          "deviceTimeout": "기기 타임아웃",
+          "passphrase": "암호키",
+          "wipeDevice": "기기 초기화",
+          "label": "라벨"
         },
         "status": {
+          "enabled": "활성화됨",
+          "disabled": "비활성화됨",
+          "upToDate": "최신 상태",
+          "updateAvailable": "업데이트 가능"
         },
         "headings": {
+          "deviceSetting": "기기 %{setting}",
+          "enterPin": "현재 PIN 입력",
+          "setPin": "새 PIN 설정하기",
+          "confirmPin": "새 PIN 확인하기",
+          "pinCaching": "PIN 캐싱",
+          "passphrase": "암호키"
         },
         "descriptions": {
+          "pin": "KeepKey 초기화 이후 9개 숫자의 조합으로 PIN을 구성합니다. PIN을 통해 보유하신 KeepKey를 부정한 접근으로부터 보호하실 수 있습니다.",
+          "pinCaching": "이 기능을 활성화하면 KeepKey 기기가 PIN을 기억하게 할 수 있습니다.",
+          "passphrase": "각 지갑마다 고유한 암호키를 작성하면 여러 지갑에 접근할 수 있습니다.",
+          "label": "기기마다 별도의 명칭을 작성해두면 보유한 기기를 쉽게 구분하실 수 있습니다. ",
+          "timeout": "기본적으로 KeepKey는 10분 이내에 절전 모드에 들어가도록 설정되어 있습니다. (이 설정은 변경이 가능합니다.)",
+          "buttonPrompt": "KeepKey %{setting} 내용을 변경하기 위해 KeepKey에 있는 버튼을 꾹 눌러주세요.",
+          "updateSuccess": "%{setting} 내용이 성공적으로 업데이트되었습니다.",
+          "updateFailed": "%{setting} 내용을 업데이트하는 도중 에러가 발생하였습니다.",
+          "timeoutDuration": "%{minutes} 분"
         },
         "alerts": {
           "passphrase": {
+            "title": "이 조합은 안전하지 않습니다.",
+            "body": "만약 암호키를 잃어버리면 보유하신 모든 자산에 접근할 수 없게 됩니다.",
+            "link": "더 알아보기"
           }
         },
         "placeholders": {
+          "label": "기기 명칭을 입력해주세요."
         },
         "actions": {
+          "update": "%{setting} 업데이트",
+          "enable": "%{setting} 활성화",
+          "learnMore": "더 알아보기"
         }
       },
       "modals": {
         "headings": {
+          "wipeKeepKey": "KeepKey 초기화하기"
         },
         "descriptions": {
+          "wipeKeepKey": "복구 구문 없이 KeepKey를 초기화하면, KeepKey에 보유한 모든 자산에 접근할 수 없다는 것을 이해하였습니다."
         },
         "actions": {
+          "wipeDevice": "기기 초기화"
         },
         "confirmations": {
+          "wipeKeepKey": "공장 초기화를 진행하기 위해 KeepKey의 버튼을 꾹 눌러주세요."
         },
         "checkboxes": {
+          "wipeKeepKey": "내가 무엇을 하려는 지 이해하고 있으며, 복구 구문을 백업해두었습니다."
         }
       }
     },
@@ -598,6 +656,7 @@
       },
       "connect": {
         "header": "Metamask에 연결",
+        "body": "연결하기 버튼을 눌러 Metamask에 로그인해주세요.",
         "button": "연결하기"
       },
       "failure": {
@@ -699,7 +758,8 @@
       "24H": "24시간",
       "1W": "일주일",
       "1M": "한 달",
-      "1Y": "1년"
+      "1Y": "1년",
+      "all": "전체 기간"
     }
   },
   "assets": {
@@ -784,7 +844,18 @@
     "downloadCSV": "CSV 파일로 다운로드",
     "csv": {
       "fileName": "ShapeShift Transaction History",
-      "txid": "TX ID"
+      "txid": "TX ID",
+      "type": "TX type",
+      "timestamp": "Timestamp",
+      "status": "Status",
+      "minerFee": "Miner fee",
+      "minerFeeCurrency": "Miner fee Currency",
+      "inputAmount": "Input amount",
+      "inputCurrency": "Input currency",
+      "inputAddress": "Input address",
+      "outputAmount": "Output amount",
+      "outputCurrency": "Output currency",
+      "outputAddress": "Output address"
     },
     "transactionTypes": {
       "send": "보냄",
@@ -792,6 +863,7 @@
       "trade": "거래"
     },
     "assets": "자산",
+    "txid": "트랜잭션 ID",
     "fee": "수수료",
     "youSent": "보낸 금액",
     "youReceived": "받은 금액",
@@ -803,6 +875,8 @@
     "minerFee": "채굴 수수료",
     "unknownType": "거래",
     "from": "보낸 주소",
-    "to": "받은 주소"
+    "to": "받은 주소",
+    "for": "종류",
+    "transfers": "전송 내역"
   }
 }

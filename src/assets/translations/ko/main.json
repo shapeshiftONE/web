@@ -11,12 +11,12 @@
     "reject": "거절",
     "connected": "연결됨",
     "created": "%{date}에 생성됨",
-    "noResultsFound": "결과가 없습니다",
-    "insufficientFunds": "자금이 부족합니다",
+    "noResultsFound": "결과가 없습니다.",
+    "insufficientFunds": "자금이 부족합니다.",
     "estimatedGas": "예상 가스 요금",
     "insufficientAmountForGas": "지불해야 할 ETH 가스가 부족합니다.",
-    "invalidAddress": "유효하지 않은 주소입니다",
-    "unresolvableEnsDomain": "ENS 도메인 확인 중에 문제가 발생했습니다",
+    "invalidAddress": "유효하지 않은 주소입니다.",
+    "unresolvableEnsDomain": "ENS 도메인 확인 중에 문제가 발생했습니다.",
     "deposit": "입금",
     "withdraw": "출금",
     "withdrawal": "출금",
@@ -364,19 +364,22 @@
         "header": "암호키를 입력하십시오.",
         "body": "암호키를 입력, 제출한 후에 KeepKey의 버튼을 눌러 암호키를 승인하십시오.",
         "button": "암호키 제출하기"
+      },
+      "label": {
+      },
+      "recoverySentence": {
+      },
+      "wiped": {
       }
     },
     "shapeShift": {
       "password": {
-        "header": "비밀번호를 입력하세요",
         "walletName": "지갑 닉네임 (선택사항)",
-        "body": "지갑을 복호화 하려면 비밀번호를 입력하세요",
         "placeholder": "비밀번호 입력",
         "show": "비밀번호 표시",
         "hide": "비밀번호 숨기기",
         "error": {
           "invalid": "잘못된 비밀번호",
-          "required": "비밀번호가 필요합니다",
           "length": "비밀번호는 반드시 %{length}자 이상이어야 합니다.",
           "maxLength": "닉네임은 최대 %{length}자 이내로 작성해주세요."
         }
@@ -395,23 +398,18 @@
       "youHaveSent": "%{amount} %{symbol}를 성공적으로 전송하였습니다.",
       "tokenAddress": "토큰 주소",
       "scanQrCode": "QR 코드 스캔하기",
-      "permissionsButton": "다시 시도하십시오",
       "sent": "%{asset} 전송 완료",
       "errorTitle": "%{asset} 전송에 실패하였습니다.",
       "errors": {
         "generic": "오류가 발생했습니다.",
         "notEnoughNativeToken": "가스 비용을 충당하기에 %{asset} 이 충분하지 않습니다.",
-        "transactionRejected": "사용자가 트랜잭션을 취소했습니다.",
-        "qrPermissions": "이 기능을 사용하려면 카메라에 대한 접근 권한 설정이 필요합니다. 이용하시는 브라우저에서 설정을 변경해주세요."
+        "transactionRejected": "사용자가 트랜잭션을 취소했습니다."
       },
       "confirm": {
         "sendAsset": "%{asset} 전송",
         "send": "전송",
-        "sendTo": "받는 주소",
         "edit": "수정",
-        "total": "총",
         "amount": "거래량",
-        "transactionFee": "거래 수수료",
         "fees": "수수료 %{feeType}"
       },
       "sendForm": {
@@ -420,13 +418,9 @@
         "charactersRemaining": "%{charactersRemaining}자 남음",
         "memoExplainer": "일부 %{assetSymbol} 수신자는 거래를 올바르게 처리하기 위해 메모가 필요할 수 있습니다.",
         "sendAsset": "%{asset} 전송",
-        "sendTo": "받는 사람",
         "sendAmount": "보내는 금액",
         "max": "최대 / 최대치",
         "transactionFee": "거래 수수료",
-        "slow": "느린 ",
-        "average": "평균",
-        "fast": "빠른",
         "enterAmount": "거래량 입력"
       }
     },
@@ -563,6 +557,36 @@
         "header": "새 PIN 확인",
         "body": "장치에 표시된 PIN 배치를 확인 후 PIN 패드에서 숫자를 누르십시오.",
         "button": "PIN 저장"
+      },
+      "settings": {
+        "menuLabels": {
+        },
+        "status": {
+        },
+        "headings": {
+        },
+        "descriptions": {
+        },
+        "alerts": {
+          "passphrase": {
+          }
+        },
+        "placeholders": {
+        },
+        "actions": {
+        }
+      },
+      "modals": {
+        "headings": {
+        },
+        "descriptions": {
+        },
+        "actions": {
+        },
+        "confirmations": {
+        },
+        "checkboxes": {
+        }
       }
     },
     "metaMask": {
@@ -574,7 +598,6 @@
       },
       "connect": {
         "header": "Metamask에 연결",
-        "body": "연결하기 버튼을 누른 후 팝업창에서 Metamask에 로그인 하십시오",
         "button": "연결하기"
       },
       "failure": {
@@ -676,8 +699,7 @@
       "24H": "24시간",
       "1W": "일주일",
       "1M": "한 달",
-      "1Y": "1년",
-      "all": "총"
+      "1Y": "1년"
     }
   },
   "assets": {
@@ -762,18 +784,7 @@
     "downloadCSV": "CSV 파일로 다운로드",
     "csv": {
       "fileName": "ShapeShift Transaction History",
-      "txid": "TX ID",
-      "type": "TX 유형",
-      "timestamp": "TX Timestamp",
-      "status": "TX 상태",
-      "minerFee": "마이너 수수료",
-      "minerFeeCurrency": "마이너 수수료 유형",
-      "inputAmount": "입금액",
-      "inputCurrency": "입금 자산",
-      "inputAddress": "입금 주소",
-      "outputAmount": "출금액",
-      "outputCurrency": "출금 자산",
-      "outputAddress": "출금 주소"
+      "txid": "TX ID"
     },
     "transactionTypes": {
       "send": "보냄",
@@ -781,7 +792,6 @@
       "trade": "거래"
     },
     "assets": "자산",
-    "txid": "TX ID",
     "fee": "수수료",
     "youSent": "보낸 금액",
     "youReceived": "받은 금액",
@@ -793,8 +803,6 @@
     "minerFee": "채굴 수수료",
     "unknownType": "거래",
     "from": "보낸 주소",
-    "to": "받은 주소",
-    "for": "For",
-    "transfers": "환승"
+    "to": "받은 주소"
   }
 }

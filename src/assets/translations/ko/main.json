@@ -24,6 +24,7 @@
     "getStarted": "시작하기",
     "connectWallet": "지갑 연결하기",
     "connectedWallet": "지갑 연결됨",
+    "connectedWalletSettings": "지갑 설정",
     "noWallet": "연결된 지갑이 없습니다.",
     "seeAll": "전체 보기",
     "darkMode": "다크 모드",
@@ -70,7 +71,8 @@
       "empty": {
         "title": "짤랑거리는 소리만이 들립니다...",
         "cta": "토큰이 하나도 없어요 😢"
-      }
+      },
+      "stakedInfo": "스테이킹된 금액을 보내거나 거래할 수 없습니다."
     },
     "recentTransactions": {
       "recentTransactions": "최근 트랜잭션 내역"
@@ -151,6 +153,8 @@
         "risks": "약관에",
         "ofParticipating": "동의하는",
         "terms": "위험을 감수하게 됩니다.",
+        "stakingYourTokens": "토큰 스테이킹",
+        "unstakingYourTokens": "토큰 스테이킹 해제",
         "tooltip": {
           "validator": "검증자(Validator)는 트랜잭션의 처리와 데이터 저장 및 블록체인에 블록을 기록하는 역할을 합니다.",
           "gasFees": "%{networkName}의 가스 요금은 이더리움 메인넷의 가스 요금보다 훨씬 낮습니다. 이 수수료는 네트워크를 보호하고 운영하는 검증자에게 직접 지불되며 ShapeShift에는 지불되지 않습니다."
@@ -184,7 +188,9 @@
     "broadcastingTransaction": "거래 방송 중",
     "transactionComplete": "거래 완료",
     "transactionFailed": "거래 실패",
+    "notEnoughFundsInReserve": "유동성 준비금 계약에 자금이 부족합니다.",
     "validator": "검증자 (Validator)",
+    "validatorMoniker": "%{moniker} 검증자 (Validator)",
     "stakedAmount": "스테이킹 금액",
     "unstakeFrom": "스테이크 해제",
     "gasFee": "가스비",
@@ -366,6 +372,9 @@
         "button": "암호키 제출하기"
       },
       "label": {
+        "header": "KeepKey 레이블 지정하기",
+        "body": "각 지갑에 레이블을 지정하면 쉽게 구별할 수 있습니다.",
+        "button": "레이블 설정"
       },
       "recoverySentence": {
         "header": "복구 문장을 반드시 따로 기록해두세요",
@@ -460,6 +469,7 @@
       "estimatedReturns": "연간 예상 수익*",
       "estimateDisclaimer": "*견적은 시장조건에 따라 변동될 수 있습니다.",
       "footerDisclaimer": "서비스 약관에 동의하면 계속하십시오.",
+      "footerDisclaimerLink": "서비스 약관.",
       "slippageSettings": "슬리피지 설정"
     },
     "withdraw": {
